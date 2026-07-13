@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waves</title>
+<link rel="stylesheet" href="styles/index.css">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+</head>
+<body>
+
+<div class="wavesBg">WAVES</div>
+
+<div class="wavesContainer" id="WAVES">
+  <div class="wave wave1"></div>
+  <div class="wave wave2"></div>
+  <div class="wave wave3"></div>
+</div>
+
+<button class="launcherBtn" id="homeTrigger">
+  <span class="material-symbols-outlined">home</span>
+</button>
+
+<div class="uiWrapper" id="uiModule">
+  <div class="sideNav">
+    <button class="navBtn active"><span class="material-symbols-outlined">home</span></button>
+    <button class="navBtn"><span class="material-symbols-outlined">group</span></button>
+    <button class="navBtn"><span class="material-symbols-outlined">dashboard</span></button>
+    <button class="navBtn"><span class="material-symbols-outlined">desktop_windows</span></button>
+  </div>
+
+  <div class="mainPanel">
+    <button class="panelBtn spanTwo" onclick="window.location.href='pages/browser.html'">
+      <span class="material-symbols-outlined">language</span>
+      <span class="label">Browser</span>
+    </button>
+    <button class="panelBtn spanOne" onclick="window.location.href='pages/apps.html'">
+      <span class="material-symbols-outlined">grid_view</span>
+      <span class="label">Apps</span>
+    </button>
+
+    <button class="panelBtn spanOne locked" onclick="window.location.href='pages/chat.html'">
+      <div class="iconGroup">
+        <span class="material-symbols-outlined">chat</span>
+        <span class="material-symbols-outlined lock">lock</span>
+      </div>
+      <span class="label">Chat</span>
+    </button>
+    <button class="panelBtn spanTwo" onclick="window.location.href='pages/games.html'">
+      <span class="material-symbols-outlined">play_arrow</span>
+      <span class="label">Games</span>
+    </button>
+
+    <button class="panelBtn spanTwo" onclick="window.location.href='pages/streaming.html'">
+      <span class="material-symbols-outlined">tv</span>
+      <span class="label">Streaming</span>
+    </button>
+    <button class="panelBtn spanOne" onclick="window.location.href='pages/login.html'">
+      <span class="material-symbols-outlined">person</span>
+      <span class="label">Login</span>
+    </button>
+  </div>
+
+  <button class="closeBtn" id="closeTrigger"><span class="material-symbols-outlined">close</span></button>
+</div>
+
+<script>
+  const homeTrigger = document.getElementById('homeTrigger');
+  const closeTrigger = document.getElementById('closeTrigger');
+  const waves = document.getElementById('WAVES');
+  const uiModule = document.getElementById('uiModule');
+
+  homeTrigger.addEventListener('click', () => {
+    waves.classList.add('active');
+    homeTrigger.style.display = 'none';
+    
+    setTimeout(() => {
+      uiModule.classList.add('active');
+    }, 1500);
+
+    setTimeout(() => {
+      waves.classList.remove('active');
+    }, 3000);
+  });
+
+  closeTrigger.addEventListener('click', () => {
+    uiModule.classList.remove('active');
+    homeTrigger.style.display = 'flex';
+  });
+</script>
+</body>
+</html>
