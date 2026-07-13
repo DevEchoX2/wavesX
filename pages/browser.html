@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browser</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+  body { background-color: #050505; height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow: hidden; }
+  .topSection { background-color: #0d0d0d; border-bottom: 1px solid #222; }
+  .tabRow { display: flex; align-items: flex-end; padding: 8px 10px 0; gap: 5px; background-color: #050505; }
+  .tabActive { background-color: #0d0d0d; color: #fff; padding: 10px 15px; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 30px; font-size: 12px; border: 1px solid #222; border-bottom: none; cursor: default; }
+  .tabActive span { font-size: 14px; color: #888; cursor: pointer; }
+  .tabActive span:hover { color: #fff; }
+  .addTab { background: transparent; border: none; color: #888; cursor: pointer; padding: 5px; border-radius: 5px; display: flex; margin-bottom: 4px; }
+  .addTab:hover { background-color: #1a1a1a; color: #fff; }
+  .urlRow { display: flex; align-items: center; padding: 10px; gap: 10px; background-color: #0d0d0d; }
+  .ctrlBtn { background: transparent; border: 1px solid #2a2a2a; color: #888; border-radius: 8px; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
+  .ctrlBtn:hover { background-color: #1a1a1a; color: #fff; }
+  .searchBox { flex: 1; display: flex; align-items: center; background-color: #050505; border: 1px solid #2a2a2a; border-radius: 8px; padding: 0 15px; height: 38px; }
+  .searchBox input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 13px; }
+  .viewPort { flex: 1; width: 100%; border: none; background-color: #050505; }
+</style>
+</head>
+<body>
+  <div class="topSection">
+    <div class="tabRow">
+      <div class="tabActive">
+        New Tab
+        <span class="material-symbols-outlined">close</span>
+      </div>
+      <button class="addTab">
+        <span class="material-symbols-outlined">add</span>
+      </button>
+    </div>
+    <div class="urlRow">
+      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_left</span></button>
+      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span></button>
+      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">refresh</span></button>
+      <button class="ctrlBtn" onclick="window.location.href='../index.html'"><span class="material-symbols-outlined" style="font-size: 20px;">home</span></button>
+      
+      <div class="searchBox">
+        <input type="text" value="waves:newtab" readonly>
+      </div>
+
+      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">fullscreen</span></button>
+      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">extension</span></button>
+      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">settings</span></button>
+    </div>
+  </div>
+  <iframe src="../newtab.html" class="viewPort"></iframe>
+</body>
+</html>
