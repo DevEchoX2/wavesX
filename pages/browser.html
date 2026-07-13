@@ -38,7 +38,7 @@
       <button class="ctrlBtn" id="btn-back"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_left</span></button>
       <button class="ctrlBtn" id="btn-forward"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span></button>
       <button class="ctrlBtn" id="btn-refresh"><span class="material-symbols-outlined" style="font-size: 20px;">refresh</span></button>
-      <button class="ctrlBtn" id="btn-home"><span class="material-symbols-outlined" style="font-size: 20px;">home</span></button>
+      <button class="ctrlBtn" onclick="window.location.href='../index.html'"><span class="material-symbols-outlined" style="font-size: 20px;">home</span></button>
       
       <div class="searchBox">
         <input type="text" id="omnibox" value="waves:newtab">
@@ -50,7 +50,7 @@
     </div>
   </div>
   
-  <iframe id="viewport" src="newtab.html" class="viewPort"></iframe>
+  <iframe id="viewport" src="../newtab.html" class="viewPort"></iframe>
 
   <script>
     const omnibox = document.getElementById('omnibox');
@@ -88,11 +88,6 @@
       } catch(e) { 
         viewport.src = viewport.src; 
       }
-    });
-
-    document.getElementById('btn-home').addEventListener('click', () => {
-      viewport.src = 'newtab.html';
-      omnibox.value = 'waves:newtab';
     });
   </script>
 </body>
