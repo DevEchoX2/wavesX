@@ -27,34 +27,67 @@
   
   <div class="inputWrap">
     <span class="material-symbols-outlined">search</span>
-    <input type="text" placeholder="Search or enter URL...">
+    <input type="text" id="nt-search" placeholder="Search or enter URL...">
   </div>
 
   <div class="linkGrid">
-    <div class="linkCard">
+    <div class="linkCard" data-url="https://youtube.com">
       <div class="iconTile"><span class="material-symbols-outlined">play_circle</span></div>
       <span class="cardName">youtube</span>
     </div>
-    <div class="linkCard">
+    <div class="linkCard" data-url="https://github.com">
       <div class="iconTile"><span class="material-symbols-outlined">code</span></div>
       <span class="cardName">github</span>
     </div>
-    <div class="linkCard">
+    <div class="linkCard" data-url="https://discord.com">
       <div class="iconTile"><span class="material-symbols-outlined">sports_esports</span></div>
       <span class="cardName">discord</span>
     </div>
-    <div class="linkCard">
+    <div class="linkCard" data-url="https://twitter.com">
       <div class="iconTile"><span class="material-symbols-outlined">close</span></div>
       <span class="cardName">twitter</span>
     </div>
-    <div class="linkCard">
+    <div class="linkCard" data-url="https://reddit.com">
       <div class="iconTile"><span class="material-symbols-outlined">chat_bubble</span></div>
       <span class="cardName">reddit</span>
     </div>
-    <div class="linkCard">
+    <div class="linkCard" data-url="https://instagram.com">
       <div class="iconTile"><span class="material-symbols-outlined">photo_camera</span></div>
       <span class="cardName">instagram</span>
     </div>
   </div>
+
+  <script>
+    function formatURL(query) {
+      if (query.startsWith('http://') || query.startsWith('https://')) return query;
+      if (query.includes('.') && !query.includes(' ')) return 'https://' + query;
+      return 'https://www.google.com/search?q=' + encodeURIComponent(query);
+    }
+
+    const searchInput = document.getElementById('nt-search');
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && searchInput.value.trim() !== '') {
+        const targetUrl = formatURL(searchInput.value.trim());
+        
+        if (window.parent && window.parent.document.getElementById('omnibox')) {
+          window.parent.document.getElementById('omnibox').value = targetUrl;
+        }
+        
+        window.location.href = targetUrl; 
+      }
+    });
+
+    document.querySelectorAll('.linkCard').forEach(card => {
+      card.addEventListener('click', () => {
+        const targetUrl = card.getAttribute('data-url');
+        
+        if (window.parent && window.parent.document.getElementById('omnibox')) {
+          window.parent.document.getElementById('omnibox').value = targetUrl;
+        }
+        
+        window.location.href = targetUrl;
+      });
+    });
+  </script>
 </body>
 </html>
