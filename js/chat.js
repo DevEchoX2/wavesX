@@ -4,25 +4,29 @@ if (!currentUser) {
   window.location.href = 'login.html';
 }
 
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 const channels = [
   { id: 'general', name: 'general', icon: 'tag' },
   { id: 'gaming', name: 'gaming', icon: 'sports_esports' },
   { id: 'music', name: 'music', icon: 'headphones' }
 ];
 
-let members = JSON.parse(localStorage.getItem('waves_users')) || [];
-if (!members.find(m => m.name === currentUser.name)) {
-  members.push(currentUser);
-  localStorage.setItem('waves_users', JSON.stringify(members));
-}
-
-let messages = JSON.parse(localStorage.getItem('waves_messages')) || {
-  general: [],
-  gaming: [],
-  music: []
-};
-
+let members = [];
+let messages = { general: [], gaming: [], music: [] };
 let currentChannel = 'general';
+let messageListener = null;
 
 const channelListEl = document.getElementById('channelList');
 const memberListEl = document.getElementById('memberList');
@@ -34,9 +38,16 @@ const sidebarRight = document.getElementById('sidebarRight');
 const currentChannelNameEl = document.getElementById('currentChannelName');
 
 function init() {
+  db.ref('users/' + currentUser.name).set(currentUser);
+
+  db.ref('users').on('value', (snapshot) => {
+    const data = snapshot.val();
+    members = data ? Object.values(data) : [];
+    renderMembers();
+  });
+
   renderChannels();
-  renderMembers();
-  renderMessages();
+  listenForMessages(currentChannel);
   setupEventListeners();
   
   const userAvatar = document.querySelector('.userAvatar');
@@ -47,6 +58,20 @@ function init() {
     userAvatar.innerHTML = currentUser.name.charAt(0).toUpperCase();
     userName.textContent = currentUser.name;
   }
+}
+
+function listenForMessages(channelId) {
+  if (messageListener) {
+    db.ref('messages/' + currentChannel).off('value', messageListener);
+  }
+  
+  currentChannel = channelId;
+  
+  messageListener = db.ref('messages/' + currentChannel).on('value', (snapshot) => {
+    const data = snapshot.val();
+    messages[currentChannel] = data ? Object.values(data) : [];
+    renderMessages();
+  });
 }
 
 function renderChannels() {
@@ -117,13 +142,12 @@ function renderMessages() {
 
 function switchChannel(channelId) {
   if (currentChannel === channelId) return;
-  currentChannel = channelId;
   
-  const channelData = channels.find(c => c.id === currentChannel);
+  const channelData = channels.find(c => c.id === channelId);
   currentChannelNameEl.textContent = channelData.name;
   
   renderChannels();
-  renderMessages();
+  listenForMessages(channelId);
 }
 
 function sendMessage() {
@@ -133,17 +157,14 @@ function sendMessage() {
   const now = new Date();
   const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  messages[currentChannel].push({
+  db.ref('messages/' + currentChannel).push({
     author: currentUser.name,
     color: currentUser.color,
     time: timeString,
     content: content
   });
 
-  localStorage.setItem('waves_messages', JSON.stringify(messages));
-
   messageInput.value = '';
-  renderMessages();
 }
 
 function setupEventListeners() {
