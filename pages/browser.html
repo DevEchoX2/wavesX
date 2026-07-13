@@ -35,13 +35,13 @@
       </button>
     </div>
     <div class="urlRow">
-      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_left</span></button>
-      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span></button>
-      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">refresh</span></button>
-      <button class="ctrlBtn" onclick="window.location.href='../index.html'"><span class="material-symbols-outlined" style="font-size: 20px;">home</span></button>
+      <button class="ctrlBtn" id="btn-back"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_left</span></button>
+      <button class="ctrlBtn" id="btn-forward"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span></button>
+      <button class="ctrlBtn" id="btn-refresh"><span class="material-symbols-outlined" style="font-size: 20px;">refresh</span></button>
+      <button class="ctrlBtn" id="btn-home"><span class="material-symbols-outlined" style="font-size: 20px;">home</span></button>
       
       <div class="searchBox">
-        <input type="text" value="waves:newtab" readonly>
+        <input type="text" id="omnibox" value="waves:newtab">
       </div>
 
       <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">fullscreen</span></button>
@@ -49,6 +49,51 @@
       <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">settings</span></button>
     </div>
   </div>
-  <iframe src="../newtab.html" class="viewPort"></iframe>
+  
+  <iframe id="viewport" src="newtab.html" class="viewPort"></iframe>
+
+  <script>
+    const omnibox = document.getElementById('omnibox');
+    const viewport = document.getElementById('viewport');
+
+    omnibox.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && omnibox.value.trim() !== '') {
+        let query = omnibox.value.trim();
+        let targetUrl;
+        
+        if (query.startsWith('http://') || query.startsWith('https://')) {
+          targetUrl = query;
+        } else if (query.includes('.') && !query.includes(' ')) {
+          targetUrl = 'https://' + query;
+        } else {
+          targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+        }
+
+        viewport.src = targetUrl;
+        omnibox.blur(); 
+      }
+    });
+
+    document.getElementById('btn-back').addEventListener('click', () => {
+      try { viewport.contentWindow.history.back(); } catch(e) {}
+    });
+
+    document.getElementById('btn-forward').addEventListener('click', () => {
+      try { viewport.contentWindow.history.forward(); } catch(e) {}
+    });
+
+    document.getElementById('btn-refresh').addEventListener('click', () => {
+      try { 
+        viewport.contentWindow.location.reload(); 
+      } catch(e) { 
+        viewport.src = viewport.src; 
+      }
+    });
+
+    document.getElementById('btn-home').addEventListener('click', () => {
+      viewport.src = 'newtab.html';
+      omnibox.value = 'waves:newtab';
+    });
+  </script>
 </body>
 </html>
