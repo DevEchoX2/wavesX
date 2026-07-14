@@ -42,6 +42,12 @@ signupForm.addEventListener('submit', (e) => {
       }
     })
     .catch((error) => {
+      // Friendly handling for common signup errors
+      if (error && error.code === 'auth/email-already-in-use') {
+        alert('That email is already in use. Try logging in instead.');
+        // stay on the signup page so user can switch to login
+        return;
+      }
       alert('Sign up failed: ' + error.message);
     });
 });
@@ -57,6 +63,6 @@ function saveUserData(uid, username, color, photoURL) {
   const userRef = ref(db, 'users/' + uid);
   set(userRef, newUserProfile).then(() => {
     localStorage.setItem('waves_currentUser', JSON.stringify(newUserProfile));
-    window.location.href = '../index.html';
+    window.location.href = 'chat.html';
   });
 }

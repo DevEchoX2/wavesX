@@ -23,15 +23,28 @@ loginForm.addEventListener('submit', (e) => {
       return get(userRef);
     })
     .then((snapshot) => {
-      if (snapshot.exists()) {
+      if (snapshot && snapshot.exists()) {
         const userData = snapshot.val();
         localStorage.setItem('waves_currentUser', JSON.stringify(userData));
-        window.location.href = '../index.html';
+        window.location.href = 'chat.html';
       } else {
-        alert('User profile not found in database.');
+        // If profile not found, proceed with auth-only login but inform the user
+        const fallback = { name: 'User', uid: auth.currentUser.uid, color: '#888888', photoURL: null };
+        localStorage.setItem('waves_currentUser', JSON.stringify(fallback));
+        alert('Logged in, but user profile was not found. Some features may be limited.');
+        window.location.href = 'chat.html';
       }
     })
     .catch((error) => {
+      // Handle permission errors from Realtime Database separately
+      if (error && error.code && error.code.includes('permission-denied')) {
+        const uid = auth.currentUser ? auth.currentUser.uid : null;
+        const fallback = { name: 'User', uid: uid, color: '#888888', photoURL: null };
+        localStorage.setItem('waves_currentUser', JSON.stringify(fallback));
+        alert('Logged in, but database read was denied by rules. Proceeding with limited access.');
+        window.location.href = 'chat.html';
+        return;
+      }
       alert('Login failed: ' + error.message);
     });
 });

@@ -238,3 +238,243 @@ body {
   background-color: #1a1a1a;
   color: #fff;
 }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  background-color: #050505;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.wavesBg {
+  font-size: 8rem;
+  font-weight: 900;
+  color: #333333;
+  letter-spacing: 0.5rem;
+  position: absolute;
+  z-index: 1;
+}
+
+.wavesContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+  display: none;
+}
+
+.wavesContainer.active {
+  display: block;
+}
+
+.wave {
+  position: absolute;
+  width: 200%;
+  height: 150%;
+  background: linear-gradient(90deg, transparent, #121212, #0a0a0a);
+  top: -25%;
+  right: -200%;
+  transform: rotate(-15deg);
+}
+
+.wavesContainer.active .wave {
+  animation: waveMoveLeft 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.wave1 {
+  animation-delay: 0s;
+  background: linear-gradient(90deg, transparent, #1a1a1a, #0d0d0d);
+}
+
+.wave2 {
+  animation-delay: 0.2s;
+  background: linear-gradient(90deg, transparent, #222222, #141414);
+}
+
+.wave3 {
+  animation-delay: 0.4s;
+  background: #050505;
+}
+
+@keyframes waveMoveLeft {
+  0% {
+    right: -200%;
+  }
+  100% {
+    right: 100%;
+  }
+}
+
+.launcherBtn {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 20;
+}
+
+.launcherBtn:hover {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.uiWrapper {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: transform 0.8s ease;
+}
+
+.uiWrapper.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.sideNav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.navBtn {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.navBtn.active, .navBtn:hover {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.mainPanel {
+  background-color: #0d0d0d;
+  padding: 15px;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 90px;
+  gap: 10px;
+  width: 380px;
+  border: 1px solid #222;
+}
+
+.panelBtn {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.panelBtn:hover:not(.locked) {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.spanTwo {
+  grid-column: span 2;
+}
+
+.spanOne {
+  grid-column: span 1;
+}
+
+.panelBtn .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.panelBtn .label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.locked {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.iconGroup {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iconGroup .lock {
+  position: absolute;
+  font-size: 14px;
+  bottom: -4px;
+  right: -8px;
+  background-color: #1a1a1a;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.closeBtn {
+  background-color: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: absolute;
+  right: -60px;
+  bottom: 0;
+}
+
+.closeBtn:hover {
+  background-color: #1a1a1a;
+  color: #fff;
+}
