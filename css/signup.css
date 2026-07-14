@@ -1,0 +1,104 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #050505;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.authCard {
+  background-color: #0d0d0d;
+  width: 100%;
+  max-width: 440px;
+  border-radius: 24px;
+  border: 1px solid #1a1a1a;
+  padding: 24px 32px 32px 32px;
+}
+
+.cardHeader {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+input {
+  background-color: #141414;
+  border: 1px solid #2a2a2a;
+  color: #fff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+input::placeholder {
+  color: #555;
+}
+
+input:focus {
+  border-color: #555;
+}
+
+.submitBtn {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.submitBtn:hover {
+  background-color: #e6e6e6;
+}
+
+.authLinks {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.authLinks a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.authLinks a:hover {
+  text-decoration: underline;
+}
