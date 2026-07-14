@@ -1,20 +1,22 @@
 const currentUser = JSON.parse(localStorage.getItem('waves_currentUser'));
 
 if (!currentUser) {
-  window.location.href = 'login.html';
+  window.location.href = 'pages/login.html';
 }
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  apiKey: "YOUR_SECRET_API_KEY_FROM_FIREBASE",
+  authDomain: "wavesaccount1.firebaseapp.com",
+  databaseURL: "https://wavesaccount1-default-rtdb.firebaseio.com",
+  projectId: "wavesaccount1",
+  storageBucket: "wavesaccount1.appspot.com",
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.database();
 
 const channels = [
