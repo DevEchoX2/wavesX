@@ -1,10 +1,15 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
 const accountsConfig = {
   apiKey: "AIzaSyAjMo4HNBaI9whVizVnAewzLskHatwaNJc",
   authDomain: "wavesaccount1.firebaseapp.com",
   projectId: "wavesaccount1",
   storageBucket: "wavesaccount1.firebasestorage.app",
   messagingSenderId: "467588850012",
-  appId: "1:467588850012:web:3e9c3acd6f9858b1946199"
+  appId: "1:467588850012:web:9fd187d75331cc24946199",
+  measurementId: "G-GQV8LJM23E"
 };
 
 const chatConfig = {
@@ -14,14 +19,15 @@ const chatConfig = {
   projectId: "waveschat1",
   storageBucket: "waveschat1.firebasestorage.app",
   messagingSenderId: "798003715584",
-  appId: "1:798003715584:web:c76900f4600316791d42e5"
+  appId: "1:798003715584:web:3199c464651728b51d42e5",
+  measurementId: "G-0QJZXX13KL"
 };
 
-const accountsApp = firebase.apps.find(app => app.name === '[DEFAULT]') || firebase.initializeApp(accountsConfig);
-const auth = accountsApp.auth();
+const accountsApp = initializeApp(accountsConfig);
+const auth = getAuth(accountsApp);
 
-const chatApp = firebase.apps.find(app => app.name === 'ChatApp') || firebase.initializeApp(chatConfig, 'ChatApp');
-const db = chatApp.database();
+const chatApp = initializeApp(chatConfig, "ChatApp");
+const db = getDatabase(chatApp);
 
 const colors = [
   '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8', 
@@ -31,16 +37,15 @@ const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
 const signupForm = document.getElementById('signupForm');
 
-if (signupForm) {
-  signupForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+signupForm.addEventListener('submit', (e) => {
+  e.preventDefault();
   
   const username = document.getElementById('username').value.trim();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
   const imageFile = document.getElementById('profileImage').files[0];
 
-  auth.createUserWithEmailAndPassword(email, password)
+  createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const uid = userCredential.user.uid;
       const userColor = getRandomColor();
@@ -57,14 +62,9 @@ if (signupForm) {
       }
     })
     .catch((error) => {
-      if (error.code === 'auth/email-already-in-use') {
-        alert("That email is already registered. Please log in instead.");
-      } else {
-        alert("Sign up failed: " + error.message);
-      }
+      alert("Sign up failed: " + error.message);
     });
-  });
-}
+});
 
 function saveUserData(uid, username, color, photoURL) {
   const newUserProfile = {
@@ -74,7 +74,8 @@ function saveUserData(uid, username, color, photoURL) {
     photoURL: photoURL
   };
 
-  db.ref('users/' + uid).set(newUserProfile).then(() => {
+  const userRef = ref(db, 'users/' + uid);
+  set(userRef, newUserProfile).then(() => {
     localStorage.setItem('waves_currentUser', JSON.stringify(newUserProfile));
     window.location.href = '../index.html';
   });
