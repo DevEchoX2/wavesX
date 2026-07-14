@@ -1,10 +1,15 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
 const accountsConfig = {
   apiKey: "AIzaSyAjMo4HNBaI9whVizVnAewzLskHatwaNJc",
   authDomain: "wavesaccount1.firebaseapp.com",
   projectId: "wavesaccount1",
   storageBucket: "wavesaccount1.firebasestorage.app",
   messagingSenderId: "467588850012",
-  appId: "1:467588850012:web:3e9c3acd6f9858b1946199"
+  appId: "1:467588850012:web:9fd187d75331cc24946199",
+  measurementId: "G-GQV8LJM23E"
 };
 
 const chatConfig = {
@@ -14,29 +19,30 @@ const chatConfig = {
   projectId: "waveschat1",
   storageBucket: "waveschat1.firebasestorage.app",
   messagingSenderId: "798003715584",
-  appId: "1:798003715584:web:c76900f4600316791d42e5"
+  appId: "1:798003715584:web:3199c464651728b51d42e5",
+  measurementId: "G-0QJZXX13KL"
 };
 
-const accountsApp = firebase.apps.find(app => app.name === '[DEFAULT]') || firebase.initializeApp(accountsConfig);
-const auth = accountsApp.auth();
+const accountsApp = initializeApp(accountsConfig);
+const auth = getAuth(accountsApp);
 
-const chatApp = firebase.apps.find(app => app.name === 'ChatApp') || firebase.initializeApp(chatConfig, 'ChatApp');
-const db = chatApp.database();
+const chatApp = initializeApp(chatConfig, "ChatApp");
+const db = getDatabase(chatApp);
 
 const loginForm = document.getElementById('loginForm');
 
-if (loginForm) {
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
   
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  auth.signInWithEmailAndPassword(email, password)
+  signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const uid = userCredential.user.uid;
       
-      db.ref('users/' + uid).once('value').then((snapshot) => {
+      const userRef = ref(db, 'users/' + uid);
+      get(userRef).then((snapshot) => {
         if (snapshot.exists()) {
           const userData = snapshot.val();
           localStorage.setItem('waves_currentUser', JSON.stringify(userData));
@@ -47,13 +53,6 @@ if (loginForm) {
       });
     })
     .catch((error) => {
-      if (error.code === 'auth/user-not-found') {
-        alert("No account found with that email. Please sign up first.");
-      } else if (error.code === 'auth/wrong-password') {
-        alert("Incorrect password. Please try again.");
-      } else {
-        alert("Login failed: " + error.message);
-      }
+      alert("Login failed: " + error.message);
     });
-  });
-}
+});
