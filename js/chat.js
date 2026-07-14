@@ -1,29 +1,17 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import { getDatabase, ref, update, onValue, off, push } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+import { chatConfig } from '/js/firebase-config.js';
 
 const currentUser = JSON.parse(localStorage.getItem('waves_currentUser'));
-
-if (!currentUser) {
-  window.location.href = 'pages/login.html';
-}
-
-const chatConfig = {
-  apiKey: "AIzaSyAT9SKJO8pHVBtpma293HL6O6fUPC41hq8",
-  authDomain: "waveschat1.firebaseapp.com",
-  databaseURL: "https://waveschat1-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "waveschat1",
-  storageBucket: "waveschat1.firebasestorage.app",
-  messagingSenderId: "798003715584",
-  appId: "1:798003715584:web:3199c464651728b51d42e5",
-  measurementId: "G-0QJZXX13KL"
+const isLoggedIn = Boolean(currentUser && currentUser.uid);
+const activeUser = isLoggedIn ? currentUser : {
+  name: 'Guest',
+  color: '#888888',
+  uid: null,
+  photoURL: null
 };
 
-let chatApp;
-if (getApps().length === 0) {
-  chatApp = initializeApp(chatConfig);
-} else {
-  chatApp = getApps()[0];
-}
+const chatApp = getApps().length === 0 ? initializeApp(chatConfig) : getApps()[0];
 const db = getDatabase(chatApp);
 
 const channels = [
@@ -47,8 +35,10 @@ const sidebarRight = document.getElementById('sidebarRight');
 const currentChannelNameEl = document.getElementById('currentChannelName');
 
 function init() {
-  const activeRef = ref(db, 'users/' + currentUser.uid);
-  update(activeRef, { active: true });
+  if (isLoggedIn) {
+    const activeRef = ref(db, 'users/' + currentUser.uid);
+    update(activeRef, { active: true });
+  }
 
   const usersRef = ref(db, 'users');
   onValue(usersRef, (snapshot) => {
@@ -60,19 +50,19 @@ function init() {
   renderChannels();
   listenForMessages(currentChannel);
   setupEventListeners();
-  
+
   const userAvatar = document.querySelector('.userAvatar');
   const userName = document.querySelector('.userName');
   if (userAvatar && userName) {
-    if (currentUser.photoURL) {
+    if (activeUser.photoURL) {
       userAvatar.style.backgroundColor = 'transparent';
-      userAvatar.innerHTML = `<img src="${currentUser.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+      userAvatar.innerHTML = `<img src="${activeUser.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
     } else {
-      userAvatar.style.backgroundColor = `${currentUser.color}40`;
-      userAvatar.style.color = currentUser.color;
-      userAvatar.innerHTML = currentUser.name.charAt(0).toUpperCase();
+      userAvatar.style.backgroundColor = `${activeUser.color}40`;
+      userAvatar.style.color = activeUser.color;
+      userAvatar.innerHTML = activeUser.name.charAt(0).toUpperCase();
     }
-    userName.textContent = currentUser.name;
+    userName.textContent = activeUser.name;
   }
 }
 
@@ -80,10 +70,10 @@ function listenForMessages(channelId) {
   if (messageRef) {
     off(messageRef);
   }
-  
+
   currentChannel = channelId;
   messageRef = ref(db, 'messages/' + currentChannel);
-  
+
   onValue(messageRef, (snapshot) => {
     const data = snapshot.val();
     messages[currentChannel] = data ? Object.values(data) : [];
@@ -110,8 +100,8 @@ function renderMembers() {
   members.forEach(member => {
     const div = document.createElement('div');
     div.className = 'memberCard';
-    
-    const avatarContent = member.photoURL 
+
+    const avatarContent = member.photoURL
       ? `<img src="${member.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`
       : member.name.charAt(0).toUpperCase();
 
@@ -129,7 +119,7 @@ function renderMembers() {
 function renderMessages() {
   messageFeedEl.innerHTML = '';
   const currentMessages = messages[currentChannel];
-  
+
   if (currentMessages.length === 0) {
     messageFeedEl.innerHTML = `
       <div style="text-align: center; color: #555; margin-top: auto; margin-bottom: auto;">
@@ -144,8 +134,8 @@ function renderMessages() {
   currentMessages.forEach(msg => {
     const div = document.createElement('div');
     div.className = 'messageWrapper';
-    
-    const avatarContent = msg.photoURL 
+
+    const avatarContent = msg.photoURL
       ? `<img src="${msg.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`
       : msg.author.charAt(0).toUpperCase();
 
@@ -169,10 +159,10 @@ function renderMessages() {
 
 function switchChannel(channelId) {
   if (currentChannel === channelId) return;
-  
+
   const channelData = channels.find(c => c.id === channelId);
   currentChannelNameEl.textContent = channelData.name;
-  
+
   renderChannels();
   listenForMessages(channelId);
 }
@@ -180,6 +170,11 @@ function switchChannel(channelId) {
 function sendMessage() {
   const content = messageInput.value.trim();
   if (!content) return;
+
+  if (!isLoggedIn) {
+    alert('Please log in to send messages.');
+    return;
+  }
 
   const now = new Date();
   const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

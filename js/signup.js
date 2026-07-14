@@ -1,27 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-
-const accountsConfig = {
-  apiKey: "AIzaSyAjMo4HNBaI9whVizVnAewzLskHatwaNJc",
-  authDomain: "wavesaccount1.firebaseapp.com",
-  projectId: "wavesaccount1",
-  storageBucket: "wavesaccount1.firebasestorage.app",
-  messagingSenderId: "467588850012",
-  appId: "1:467588850012:web:9fd187d75331cc24946199",
-  measurementId: "G-GQV8LJM23E"
-};
-
-const chatConfig = {
-  apiKey: "AIzaSyAT9SKJO8pHVBtpma293HL6O6fUPC41hq8",
-  authDomain: "waveschat1.firebaseapp.com",
-  databaseURL: "https://waveschat1-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "waveschat1",
-  storageBucket: "waveschat1.firebasestorage.app",
-  messagingSenderId: "798003715584",
-  appId: "1:798003715584:web:3199c464651728b51d42e5",
-  measurementId: "G-0QJZXX13KL"
-};
+import { accountsConfig, chatConfig } from '/js/firebase-config.js';
 
 const accountsApp = initializeApp(accountsConfig);
 const auth = getAuth(accountsApp);
@@ -30,16 +10,16 @@ const chatApp = initializeApp(chatConfig, "ChatApp");
 const db = getDatabase(chatApp);
 
 const colors = [
-  '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8', 
+  '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8',
   '#ff99c2', '#40e0d0', '#ff7f50', '#6495ed', '#ffbf00', '#00ff7f', '#dc143c'
 ];
-const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
+const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 const signupForm = document.getElementById('signupForm');
 
 signupForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  
+
   const username = document.getElementById('username').value.trim();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
@@ -49,7 +29,7 @@ signupForm.addEventListener('submit', (e) => {
     .then((userCredential) => {
       const uid = userCredential.user.uid;
       const userColor = getRandomColor();
-      
+
       if (imageFile) {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -62,7 +42,7 @@ signupForm.addEventListener('submit', (e) => {
       }
     })
     .catch((error) => {
-      alert("Sign up failed: " + error.message);
+      alert('Sign up failed: ' + error.message);
     });
 });
 
