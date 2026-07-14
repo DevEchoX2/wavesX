@@ -1,9 +1,9 @@
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  apiKey: "YOUR_SECRET_API_KEY_FROM_FIREBASE",
+  authDomain: "wavesaccount1.firebaseapp.com",
+  databaseURL: "https://wavesaccount1-default-rtdb.firebaseio.com",
+  projectId: "wavesaccount1",
+  storageBucket: "wavesaccount1.appspot.com",
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
@@ -11,7 +11,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
-const storage = firebase.storage();
 
 const colors = [
   '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8', 
@@ -35,15 +34,12 @@ signupForm.addEventListener('submit', (e) => {
       const userColor = getRandomColor();
       
       if (imageFile) {
-        const storageRef = storage.ref(`profiles/${uid}`);
-        storageRef.put(imageFile).then((snapshot) => {
-          snapshot.ref.getDownloadURL().then((downloadURL) => {
-            saveUserData(uid, username, userColor, downloadURL);
-          });
-        }).catch(err => {
-          alert("Image upload failed: " + err.message);
-          saveUserData(uid, username, userColor, null);
-        });
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result;
+          saveUserData(uid, username, userColor, base64String);
+        };
+        reader.readAsDataURL(imageFile);
       } else {
         saveUserData(uid, username, userColor, null);
       }
