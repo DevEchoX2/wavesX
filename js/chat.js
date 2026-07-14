@@ -38,7 +38,7 @@ const sidebarRight = document.getElementById('sidebarRight');
 const currentChannelNameEl = document.getElementById('currentChannelName');
 
 function init() {
-  db.ref('users/' + currentUser.name).set(currentUser);
+  db.ref('users/' + currentUser.uid).update({ active: true });
 
   db.ref('users').on('value', (snapshot) => {
     const data = snapshot.val();
@@ -53,9 +53,14 @@ function init() {
   const userAvatar = document.querySelector('.userAvatar');
   const userName = document.querySelector('.userName');
   if (userAvatar && userName) {
-    userAvatar.style.backgroundColor = `${currentUser.color}40`;
-    userAvatar.style.color = currentUser.color;
-    userAvatar.innerHTML = currentUser.name.charAt(0).toUpperCase();
+    if (currentUser.photoURL) {
+      userAvatar.style.backgroundColor = 'transparent';
+      userAvatar.innerHTML = `<img src="${currentUser.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    } else {
+      userAvatar.style.backgroundColor = `${currentUser.color}40`;
+      userAvatar.style.color = currentUser.color;
+      userAvatar.innerHTML = currentUser.name.charAt(0).toUpperCase();
+    }
     userName.textContent = currentUser.name;
   }
 }
@@ -93,9 +98,14 @@ function renderMembers() {
   members.forEach(member => {
     const div = document.createElement('div');
     div.className = 'memberCard';
+    
+    const avatarContent = member.photoURL 
+      ? `<img src="${member.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`
+      : member.name.charAt(0).toUpperCase();
+
     div.innerHTML = `
-      <div class="memberCardAvatar" style="background-color: ${member.color}40; color: ${member.color}; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px;">
-        ${member.name.charAt(0).toUpperCase()}
+      <div class="memberCardAvatar" style="background-color: ${member.photoURL ? 'transparent' : member.color + '40'}; color: ${member.color}; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; overflow: hidden;">
+        ${avatarContent}
         <div class="statusDot"></div>
       </div>
       <span class="memberCardName" style="color: ${member.color}">${member.name}</span>
@@ -122,9 +132,14 @@ function renderMessages() {
   currentMessages.forEach(msg => {
     const div = document.createElement('div');
     div.className = 'messageWrapper';
+    
+    const avatarContent = msg.photoURL 
+      ? `<img src="${msg.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`
+      : msg.author.charAt(0).toUpperCase();
+
     div.innerHTML = `
-      <div class="msgAvatar" style="background-color: ${msg.color}40; color: ${msg.color}; font-weight: bold; font-size: 16px;">
-        ${msg.author.charAt(0).toUpperCase()}
+      <div class="msgAvatar" style="background-color: ${msg.photoURL ? 'transparent' : msg.color + '40'}; color: ${msg.color}; font-weight: bold; font-size: 16px; overflow: hidden;">
+        ${avatarContent}
       </div>
       <div class="msgBody">
         <div class="msgHeader">
@@ -160,6 +175,7 @@ function sendMessage() {
   db.ref('messages/' + currentChannel).push({
     author: currentUser.name,
     color: currentUser.color,
+    photoURL: currentUser.photoURL || null,
     time: timeString,
     content: content
   });
