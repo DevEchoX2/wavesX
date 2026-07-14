@@ -17,16 +17,17 @@ const chatConfig = {
   appId: "1:798003715584:web:c76900f4600316791d42e5"
 };
 
-firebase.initializeApp(accountsConfig);
-const auth = firebase.auth();
+const accountsApp = firebase.apps.find(app => app.name === '[DEFAULT]') || firebase.initializeApp(accountsConfig);
+const auth = accountsApp.auth();
 
-const chatProject = firebase.initializeApp(chatConfig, 'ChatApp');
-const db = chatProject.database();
+const chatApp = firebase.apps.find(app => app.name === 'ChatApp') || firebase.initializeApp(chatConfig, 'ChatApp');
+const db = chatApp.database();
 
 const loginForm = document.getElementById('loginForm');
 
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+if (loginForm) {
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
   
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
@@ -46,6 +47,13 @@ loginForm.addEventListener('submit', (e) => {
       });
     })
     .catch((error) => {
-      alert("Login failed: " + error.message);
+      if (error.code === 'auth/user-not-found') {
+        alert("No account found with that email. Please sign up first.");
+      } else if (error.code === 'auth/wrong-password') {
+        alert("Incorrect password. Please try again.");
+      } else {
+        alert("Login failed: " + error.message);
+      }
     });
-});
+  });
+}

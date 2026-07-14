@@ -17,11 +17,11 @@ const chatConfig = {
   appId: "1:798003715584:web:c76900f4600316791d42e5"
 };
 
-firebase.initializeApp(accountsConfig);
-const auth = firebase.auth();
+const accountsApp = firebase.apps.find(app => app.name === '[DEFAULT]') || firebase.initializeApp(accountsConfig);
+const auth = accountsApp.auth();
 
-const chatProject = firebase.initializeApp(chatConfig, 'ChatApp');
-const db = chatProject.database();
+const chatApp = firebase.apps.find(app => app.name === 'ChatApp') || firebase.initializeApp(chatConfig, 'ChatApp');
+const db = chatApp.database();
 
 const colors = [
   '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8', 
@@ -31,8 +31,9 @@ const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 
 const signupForm = document.getElementById('signupForm');
 
-signupForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+if (signupForm) {
+  signupForm.addEventListener('submit', (e) => {
+    e.preventDefault();
   
   const username = document.getElementById('username').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -56,9 +57,14 @@ signupForm.addEventListener('submit', (e) => {
       }
     })
     .catch((error) => {
-      alert("Sign up failed: " + error.message);
+      if (error.code === 'auth/email-already-in-use') {
+        alert("That email is already registered. Please log in instead.");
+      } else {
+        alert("Sign up failed: " + error.message);
+      }
     });
-});
+  });
+}
 
 function saveUserData(uid, username, color, photoURL) {
   const newUserProfile = {
