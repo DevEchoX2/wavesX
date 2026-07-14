@@ -1,13 +1,11 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-import { accountsConfig, chatConfig } from '/js/firebase-config.js';
+import { chatConfig } from '/js/firebase-config.js';
 
-const accountsApp = initializeApp(accountsConfig);
-const auth = getAuth(accountsApp);
-
-const chatApp = initializeApp(chatConfig, "ChatApp");
-const db = getDatabase(chatApp);
+const app = getApps().length === 0 ? initializeApp(chatConfig) : getApps()[0];
+const auth = getAuth(app);
+const db = getDatabase(app);
 
 const colors = [
   '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8',
