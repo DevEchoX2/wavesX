@@ -1,3 +1,6 @@
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getDatabase, ref, update, onValue, off, push } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
 const currentUser = JSON.parse(localStorage.getItem('waves_currentUser'));
 
 if (!currentUser) {
@@ -11,13 +14,17 @@ const chatConfig = {
   projectId: "waveschat1",
   storageBucket: "waveschat1.firebasestorage.app",
   messagingSenderId: "798003715584",
-  appId: "1:798003715584:web:c76900f4600316791d42e5"
+  appId: "1:798003715584:web:3199c464651728b51d42e5",
+  measurementId: "G-0QJZXX13KL"
 };
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(chatConfig);
+let chatApp;
+if (getApps().length === 0) {
+  chatApp = initializeApp(chatConfig);
+} else {
+  chatApp = getApps()[0];
 }
-const db = firebase.database();
+const db = getDatabase(chatApp);
 
 const channels = [
   { id: 'general', name: 'general', icon: 'tag' },
@@ -28,7 +35,7 @@ const channels = [
 let members = [];
 let messages = { general: [], gaming: [], music: [] };
 let currentChannel = 'general';
-let messageListener = null;
+let messageRef = null;
 
 const channelListEl = document.getElementById('channelList');
 const memberListEl = document.getElementById('memberList');
@@ -40,9 +47,11 @@ const sidebarRight = document.getElementById('sidebarRight');
 const currentChannelNameEl = document.getElementById('currentChannelName');
 
 function init() {
-  db.ref('users/' + currentUser.uid).update({ active: true });
+  const activeRef = ref(db, 'users/' + currentUser.uid);
+  update(activeRef, { active: true });
 
-  db.ref('users').on('value', (snapshot) => {
+  const usersRef = ref(db, 'users');
+  onValue(usersRef, (snapshot) => {
     const data = snapshot.val();
     members = data ? Object.values(data) : [];
     renderMembers();
@@ -68,13 +77,14 @@ function init() {
 }
 
 function listenForMessages(channelId) {
-  if (messageListener) {
-    db.ref('messages/' + currentChannel).off('value', messageListener);
+  if (messageRef) {
+    off(messageRef);
   }
   
   currentChannel = channelId;
+  messageRef = ref(db, 'messages/' + currentChannel);
   
-  messageListener = db.ref('messages/' + currentChannel).on('value', (snapshot) => {
+  onValue(messageRef, (snapshot) => {
     const data = snapshot.val();
     messages[currentChannel] = data ? Object.values(data) : [];
     renderMessages();
@@ -174,7 +184,8 @@ function sendMessage() {
   const now = new Date();
   const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  db.ref('messages/' + currentChannel).push({
+  const channelMessagesRef = ref(db, 'messages/' + currentChannel);
+  push(channelMessagesRef, {
     author: currentUser.name,
     color: currentUser.color,
     photoURL: currentUser.photoURL || null,
