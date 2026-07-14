@@ -4,18 +4,18 @@ if (!currentUser) {
   window.location.href = 'pages/login.html';
 }
 
-const firebaseConfig = {
-  apiKey: "YOUR_SECRET_API_KEY_FROM_FIREBASE",
-  authDomain: "wavesaccount1.firebaseapp.com",
-  databaseURL: "https://wavesaccount1-default-rtdb.firebaseio.com",
-  projectId: "wavesaccount1",
-  storageBucket: "wavesaccount1.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+const chatConfig = {
+  apiKey: "AIzaSyAT9SKJO8pHVBtpma293HL6O6fUPC41hq8",
+  authDomain: "waveschat1.firebaseapp.com",
+  databaseURL: "https://waveschat1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "waveschat1",
+  storageBucket: "waveschat1.firebasestorage.app",
+  messagingSenderId: "798003715584",
+  appId: "1:798003715584:web:c76900f4600316791d42e5"
 };
 
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(chatConfig);
 }
 const db = firebase.database();
 
