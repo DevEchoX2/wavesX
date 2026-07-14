@@ -1,10 +1,9 @@
-
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  apiKey: "YOUR_SECRET_API_KEY_FROM_FIREBASE",
+  authDomain: "wavesaccount1.firebaseapp.com",
+  databaseURL: "https://wavesaccount1-default-rtdb.firebaseio.com",
+  projectId: "wavesaccount1",
+  storageBucket: "wavesaccount1.appspot.com",
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
@@ -25,13 +24,13 @@ loginForm.addEventListener('submit', (e) => {
     .then((userCredential) => {
       const uid = userCredential.user.uid;
       
-      
       db.ref('users/' + uid).once('value').then((snapshot) => {
         if (snapshot.exists()) {
           const userData = snapshot.val();
-          
           localStorage.setItem('waves_currentUser', JSON.stringify(userData));
           window.location.href = '../index.html';
+        } else {
+          alert("User profile not found in database.");
         }
       });
     })
