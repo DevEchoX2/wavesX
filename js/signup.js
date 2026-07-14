@@ -1,11 +1,16 @@
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, getIdToken, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-import { chatConfig } from '/js/firebase-config.js';
+import { accountsConfig, chatConfig } from '/js/firebase-config.js';
 
-const app = getApps().length === 0 ? initializeApp(chatConfig) : getApps()[0];
-const auth = getAuth(app);
-const db = getDatabase(app);
+const apps = getApps();
+const accountsApp = apps.find(a => a.name === 'AccountsApp') || initializeApp(accountsConfig, 'AccountsApp');
+const chatApp = apps.find(a => a.name === 'ChatApp') || initializeApp(chatConfig, 'ChatApp');
+const accountsAuth = getAuth(accountsApp);
+const chatAuth = getAuth(chatApp);
+const db = getDatabase(chatApp);
+
+const TOKEN_EXCHANGE_URL = '/token-exchange';
 
 const colors = [
   '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8',
@@ -23,9 +28,13 @@ signupForm.addEventListener('submit', (e) => {
   const password = document.getElementById('password').value;
   const imageFile = document.getElementById('profileImage').files[0];
 
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const uid = userCredential.user.uid;
+  createUserWithEmailAndPassword(accountsAuth, email, password)
+    .then((userCredential) => getIdToken(userCredential.user))
+    .then((idToken) => fetch(TOKEN_EXCHANGE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken }) }))
+    .then((res) => res.ok ? res.json() : Promise.reject(new Error('Token exchange failed')))
+    .then((data) => signInWithCustomToken(chatAuth, data.customToken))
+    .then(() => {
+      const uid = chatAuth.currentUser.uid;
       const userColor = getRandomColor();
 
       if (imageFile) {
