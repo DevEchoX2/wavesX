@@ -1,16 +1,27 @@
-const firebaseConfig = {
-  apiKey: "YOUR_SECRET_API_KEY_FROM_FIREBASE",
+const accountsConfig = {
+  apiKey: "AIzaSyAjMo4HNBaI9whVizVnAewzLskHatwaNJc",
   authDomain: "wavesaccount1.firebaseapp.com",
-  databaseURL: "https://wavesaccount1-default-rtdb.firebaseio.com",
   projectId: "wavesaccount1",
-  storageBucket: "wavesaccount1.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  storageBucket: "wavesaccount1.firebasestorage.app",
+  messagingSenderId: "467588850012",
+  appId: "1:467588850012:web:3e9c3acd6f9858b1946199"
 };
 
-firebase.initializeApp(firebaseConfig);
+const chatConfig = {
+  apiKey: "AIzaSyAT9SKJO8pHVBtpma293HL6O6fUPC41hq8",
+  authDomain: "waveschat1.firebaseapp.com",
+  databaseURL: "https://waveschat1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "waveschat1",
+  storageBucket: "waveschat1.firebasestorage.app",
+  messagingSenderId: "798003715584",
+  appId: "1:798003715584:web:c76900f4600316791d42e5"
+};
+
+firebase.initializeApp(accountsConfig);
 const auth = firebase.auth();
-const db = firebase.database();
+
+const chatProject = firebase.initializeApp(chatConfig, 'ChatApp');
+const db = chatProject.database();
 
 const colors = [
   '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8', 
