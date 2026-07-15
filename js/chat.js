@@ -5,12 +5,14 @@ const membersList = document.getElementById('membersList');
 const channelItems = document.querySelectorAll('.channel-item');
 const chatHeader = document.getElementById('chatHeader');
 
-let socket;
+const socket = io('http://localhost:3000');
 let currentChannelId = 'general';
 
-function connectWebSocket() {
+socket.emit('joinChannel', currentChannelId);
 
-}
+socket.on('receiveMessage', (data) => {
+  renderMessage(data);
+});
 
 function renderMessage(data) {
   const { id, user, text, timestamp, roles = [] } = data;
@@ -47,6 +49,13 @@ function sendMessage() {
   const text = messageInput.value.trim();
   if (!text) return;
 
+  socket.emit('sendMessage', {
+    channelId: currentChannelId,
+    text: text,
+    user: { name: 'Guest', avatarUrl: 'default-avatar.png', color: '#fff' },
+    roles: []
+  });
+
   messageInput.value = '';
 }
 
@@ -55,19 +64,15 @@ channelItems.forEach(item => {
     channelItems.forEach(c => c.classList.remove('active'));
     item.classList.add('active');
     
+    socket.emit('leaveChannel', currentChannelId);
+    
     currentChannelId = item.dataset.channel;
     chatHeader.innerText = `# ${currentChannelId}`;
     messageContainer.innerHTML = ''; 
+    
+    socket.emit('joinChannel', currentChannelId);
   });
 });
-
-function loadChannels() {
-
-}
-
-function loadMembers() {
-
-}
 
 sendBtn.addEventListener('click', sendMessage);
 messageInput.addEventListener('keypress', (e) => {
