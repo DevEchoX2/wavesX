@@ -9,11 +9,12 @@ loginForm.addEventListener('submit', async (e) => {
   const password = passwordInput.value;
 
   if (!email || !password) {
+    alert('Please fill in all fields');
     return;
   }
 
   try {
-    const response = await fetch('', {
+    const response = await fetch('http://localhost:3000/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -22,22 +23,16 @@ loginForm.addEventListener('submit', async (e) => {
     });
 
     if (!response.ok) {
-      throw new Error();
+      throw new Error('Login failed');
     }
 
     const data = await response.json();
     
-    window.location.href = 'chat.html';
-
+    if (data.token) {
+      localStorage.setItem('waves_token', data.token);
+      window.location.href = 'chat.html';
+    }
   } catch (error) {
-
+    alert(error.message);
   }
 });
-
-function validateEmail(email) {
-  
-}
-
-function handleLoginError(error) {
-  
-}
