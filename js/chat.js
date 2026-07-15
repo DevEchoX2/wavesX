@@ -1,18 +1,10 @@
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { getDatabase, ref, update, onValue, off, push } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-import { chatConfig } from '/js/firebase-config.js';
-
-const currentUser = JSON.parse(localStorage.getItem('waves_currentUser'));
-const isLoggedIn = Boolean(currentUser && currentUser.uid);
-const activeUser = isLoggedIn ? currentUser : {
+const currentUser = JSON.parse(localStorage.getItem('waves_currentUser') || 'null');
+const activeUser = currentUser && currentUser.uid ? currentUser : {
   name: 'Guest',
   color: '#888888',
   uid: null,
   photoURL: null
 };
-
-const chatApp = getApps().length === 0 ? initializeApp(chatConfig) : getApps()[0];
-const db = getDatabase(chatApp);
 
 const channels = [
   { id: 'general', name: 'general', icon: 'tag' },
@@ -23,7 +15,6 @@ const channels = [
 let members = [];
 let messages = { general: [], gaming: [], music: [] };
 let currentChannel = 'general';
-let messageRef = null;
 
 const channelListEl = document.getElementById('channelList');
 const memberListEl = document.getElementById('memberList');
@@ -34,56 +25,58 @@ const toggleMembersBtn = document.getElementById('toggleMembers');
 const sidebarRight = document.getElementById('sidebarRight');
 const currentChannelNameEl = document.getElementById('currentChannelName');
 
+function loadMessages() {
+  const storedMessages = JSON.parse(localStorage.getItem('waves_chatMessages') || '{}');
+  messages = {
+    general: Array.isArray(storedMessages.general) ? storedMessages.general : [],
+    gaming: Array.isArray(storedMessages.gaming) ? storedMessages.gaming : [],
+    music: Array.isArray(storedMessages.music) ? storedMessages.music : []
+  };
+}
+
+function saveMessages() {
+  localStorage.setItem('waves_chatMessages', JSON.stringify(messages));
+}
+
+function getMembers() {
+  const storedUsers = JSON.parse(localStorage.getItem('waves_users') || '{}');
+  const profiles = Object.values(storedUsers);
+  const seen = new Set();
+  const mergedMembers = [];
+
+  const addMember = (member) => {
+    if (!member || !member.name) return;
+    const key = member.uid || member.email || member.name;
+    if (!seen.has(key)) {
+      seen.add(key);
+      mergedMembers.push(member);
+    }
+  };
+
+  addMember(activeUser);
+  profiles.forEach(addMember);
+  return mergedMembers;
+}
+
 function init() {
-  if (isLoggedIn) {
-    const activeRef = ref(db, 'users/' + currentUser.uid);
-    update(activeRef, { active: true });
-  }
-
-  const usersRef = ref(db, 'users');
-  onValue(usersRef, (snapshot) => {
-    const data = snapshot.val();
-    members = data ? Object.values(data) : [];
-    renderMembers();
-  });
-
+  loadMessages();
+  members = getMembers();
   renderChannels();
   listenForMessages(currentChannel);
   setupEventListeners();
-
-  const userAvatar = document.querySelector('.userAvatar');
-  const userName = document.querySelector('.userName');
-  if (userAvatar && userName) {
-    if (activeUser.photoURL) {
-      userAvatar.style.backgroundColor = 'transparent';
-      userAvatar.innerHTML = `<img src="${activeUser.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-    } else {
-      userAvatar.style.backgroundColor = `${activeUser.color}40`;
-      userAvatar.style.color = activeUser.color;
-      userAvatar.innerHTML = activeUser.name.charAt(0).toUpperCase();
-    }
-    userName.textContent = activeUser.name;
-  }
+  renderMembers();
+  renderCurrentUser();
 }
 
 function listenForMessages(channelId) {
-  if (messageRef) {
-    off(messageRef);
-  }
-
   currentChannel = channelId;
-  messageRef = ref(db, 'messages/' + currentChannel);
-
-  onValue(messageRef, (snapshot) => {
-    const data = snapshot.val();
-    messages[currentChannel] = data ? Object.values(data) : [];
-    renderMessages();
-  });
+  renderMessages();
 }
 
 function renderChannels() {
+  if (!channelListEl) return;
   channelListEl.innerHTML = '';
-  channels.forEach(channel => {
+  channels.forEach((channel) => {
     const div = document.createElement('div');
     div.className = `channelItem ${channel.id === currentChannel ? 'active' : ''}`;
     div.innerHTML = `
@@ -96,8 +89,9 @@ function renderChannels() {
 }
 
 function renderMembers() {
+  if (!memberListEl) return;
   memberListEl.innerHTML = '';
-  members.forEach(member => {
+  members.forEach((member) => {
     const div = document.createElement('div');
     div.className = 'memberCard';
 
@@ -117,21 +111,22 @@ function renderMembers() {
 }
 
 function renderMessages() {
+  if (!messageFeedEl) return;
   messageFeedEl.innerHTML = '';
-  const currentMessages = messages[currentChannel];
+  const currentMessages = messages[currentChannel] || [];
 
   if (currentMessages.length === 0) {
     messageFeedEl.innerHTML = `
       <div style="text-align: center; color: #555; margin-top: auto; margin-bottom: auto;">
         <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 10px;">forum</span>
-        <p>Welcome to #${channels.find(c => c.id === currentChannel).name}!</p>
+        <p>Welcome to #${channels.find((c) => c.id === currentChannel).name}!</p>
         <p style="font-size: 12px; margin-top: 5px;">Be the first to say hello.</p>
       </div>
     `;
     return;
   }
 
-  currentMessages.forEach(msg => {
+  currentMessages.forEach((msg) => {
     const div = document.createElement('div');
     div.className = 'messageWrapper';
 
@@ -157,11 +152,29 @@ function renderMessages() {
   messageFeedEl.scrollTop = messageFeedEl.scrollHeight;
 }
 
+function renderCurrentUser() {
+  const userAvatar = document.querySelector('.userAvatar');
+  const userName = document.querySelector('.userName');
+  if (userAvatar && userName) {
+    if (activeUser.photoURL) {
+      userAvatar.style.backgroundColor = 'transparent';
+      userAvatar.innerHTML = `<img src="${activeUser.photoURL}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    } else {
+      userAvatar.style.backgroundColor = `${activeUser.color}40`;
+      userAvatar.style.color = activeUser.color;
+      userAvatar.innerHTML = activeUser.name.charAt(0).toUpperCase();
+    }
+    userName.textContent = activeUser.name;
+  }
+}
+
 function switchChannel(channelId) {
   if (currentChannel === channelId) return;
 
-  const channelData = channels.find(c => c.id === channelId);
-  currentChannelNameEl.textContent = channelData.name;
+  const channelData = channels.find((c) => c.id === channelId);
+  if (currentChannelNameEl) {
+    currentChannelNameEl.textContent = channelData.name;
+  }
 
   renderChannels();
   listenForMessages(channelId);
@@ -171,39 +184,42 @@ function sendMessage() {
   const content = messageInput.value.trim();
   if (!content) return;
 
-  if (!isLoggedIn) {
-    alert('Please log in to send messages.');
-    return;
-  }
-
   const now = new Date();
   const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  const channelMessagesRef = ref(db, 'messages/' + currentChannel);
-  push(channelMessagesRef, {
-    author: currentUser.name,
-    color: currentUser.color,
-    photoURL: currentUser.photoURL || null,
+  messages[currentChannel] = messages[currentChannel] || [];
+  messages[currentChannel].push({
+    author: activeUser.name,
+    color: activeUser.color,
+    photoURL: activeUser.photoURL || null,
     time: timeString,
-    content: content
+    content
   });
 
+  saveMessages();
+  renderMessages();
   messageInput.value = '';
 }
 
 function setupEventListeners() {
-  messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  });
+  if (messageInput) {
+    messageInput.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  }
 
-  sendBtn.addEventListener('click', sendMessage);
+  if (sendBtn) {
+    sendBtn.addEventListener('click', sendMessage);
+  }
 
-  toggleMembersBtn.addEventListener('click', () => {
-    sidebarRight.classList.toggle('hidden');
-    toggleMembersBtn.classList.toggle('active');
-  });
+  if (toggleMembersBtn && sidebarRight) {
+    toggleMembersBtn.addEventListener('click', () => {
+      sidebarRight.classList.toggle('hidden');
+      toggleMembersBtn.classList.toggle('active');
+    });
+  }
 }
 
 init();
