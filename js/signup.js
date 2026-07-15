@@ -1,55 +1,45 @@
-const colors = [
-  '#eb4034', '#e89e3a', '#e8d73a', '#4ce83a', '#3a9ee8', '#9e3ae8', '#e83ab8',
-  '#ff99c2', '#40e0d0', '#ff7f50', '#6495ed', '#ffbf00', '#00ff7f', '#dc143c'
-];
-
-const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];
 const signupForm = document.getElementById('signupForm');
+const usernameInput = document.getElementById('username');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 
-if (signupForm) {
-  signupForm.addEventListener('submit', (event) => {
-    event.preventDefault();
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const imageFile = document.getElementById('profileImage').files[0];
+  const username = usernameInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
 
-    if (!username || !email || !password) {
-      alert('Please fill in all fields.');
-      return;
+  if (!username || !email || !password) {
+    return;
+  }
+
+  try {
+    const response = await fetch('', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, email, password })
+    });
+
+    if (!response.ok) {
+      throw new Error();
     }
 
-    const storedUsers = JSON.parse(localStorage.getItem('waves_users') || '{}');
-    if (storedUsers[email]) {
-      alert('That email is already registered. Try logging in instead.');
-      return;
-    }
+    const data = await response.json();
 
-    const userColor = getRandomColor();
+    window.location.href = 'chat.html';
 
-    const finishSignup = (photoURL = null) => {
-      const newUserProfile = {
-        name: username,
-        email,
-        password,
-        color: userColor,
-        uid: crypto.randomUUID ? crypto.randomUUID() : `user-${Date.now()}`,
-        photoURL
-      };
+  } catch (error) {
 
-      storedUsers[email] = newUserProfile;
-      localStorage.setItem('waves_users', JSON.stringify(storedUsers));
-      localStorage.setItem('waves_currentUser', JSON.stringify(newUserProfile));
-      window.location.href = 'chat.html';
-    };
+  }
+});
 
-    if (imageFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => finishSignup(reader.result);
-      reader.readAsDataURL(imageFile);
-    } else {
-      finishSignup(null);
-    }
-  });
+function validateForm(username, email, password) {
+  
+}
+
+function handleSignupError(error) {
+  
 }
