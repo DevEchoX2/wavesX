@@ -9,10 +9,12 @@
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
   body { background-color: #050505; height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow: hidden; }
   .topSection { background-color: #0d0d0d; border-bottom: 1px solid #222; }
-  .tabRow { display: flex; align-items: flex-end; padding: 8px 10px 0; gap: 5px; background-color: #050505; }
-  .tabActive { background-color: #0d0d0d; color: #fff; padding: 10px 15px; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 30px; font-size: 12px; border: 1px solid #222; border-bottom: none; cursor: default; }
-  .tabActive span { font-size: 14px; color: #888; cursor: pointer; }
-  .tabActive span:hover { color: #fff; }
+  .tabRow { display: flex; align-items: flex-end; padding: 8px 10px 0; gap: 5px; background-color: #050505; overflow-x: auto; }
+  .tabItem { background-color: #0d0d0d; color: #fff; padding: 10px 12px; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12px; border: 1px solid #222; border-bottom: none; cursor: pointer; min-width: 110px; max-width: 180px; }
+  .tabItem.active { background-color: #161616; color: #fff; }
+  .tabTitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabClose { font-size: 14px; color: #888; cursor: pointer; }
+  .tabClose:hover { color: #fff; }
   .addTab { background: transparent; border: none; color: #888; cursor: pointer; padding: 5px; border-radius: 5px; display: flex; margin-bottom: 4px; }
   .addTab:hover { background-color: #1a1a1a; color: #fff; }
   .urlRow { display: flex; align-items: center; padding: 10px; gap: 10px; background-color: #0d0d0d; }
@@ -26,69 +28,234 @@
 <body>
   <div class="topSection">
     <div class="tabRow">
-      <div class="tabActive">
-        New Tab
-        <span class="material-symbols-outlined">close</span>
-      </div>
-      <button class="addTab">
+      <button class="addTab" id="btn-add-tab" type="button">
         <span class="material-symbols-outlined">add</span>
       </button>
     </div>
     <div class="urlRow">
-      <button class="ctrlBtn" id="btn-back"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_left</span></button>
-      <button class="ctrlBtn" id="btn-forward"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span></button>
-      <button class="ctrlBtn" id="btn-refresh"><span class="material-symbols-outlined" style="font-size: 20px;">refresh</span></button>
-      <button class="ctrlBtn" onclick="window.location.href='../index.html'"><span class="material-symbols-outlined" style="font-size: 20px;">home</span></button>
-      
+      <button class="ctrlBtn" id="btn-back" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_left</span></button>
+      <button class="ctrlBtn" id="btn-forward" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span></button>
+      <button class="ctrlBtn" id="btn-refresh" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">refresh</span></button>
+      <button class="ctrlBtn" onclick="window.location.href='../index.html'" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">home</span></button>
+
       <div class="searchBox">
         <input type="text" id="omnibox" value="waves:newtab">
       </div>
 
-      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">fullscreen</span></button>
-      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">extension</span></button>
-      <button class="ctrlBtn"><span class="material-symbols-outlined" style="font-size: 20px;">settings</span></button>
+      <button class="ctrlBtn" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">fullscreen</span></button>
+      <button class="ctrlBtn" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">extension</span></button>
+      <button class="ctrlBtn" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">settings</span></button>
     </div>
   </div>
-  
+
   <iframe id="viewport" src="../newtab.html" class="viewPort"></iframe>
 
   <script>
     const omnibox = document.getElementById('omnibox');
     const viewport = document.getElementById('viewport');
+    const tabRow = document.querySelector('.tabRow');
+    const addTabButton = document.getElementById('btn-add-tab');
 
-    omnibox.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && omnibox.value.trim() !== '') {
-        let query = omnibox.value.trim();
-        let targetUrl;
-        
-        if (query.startsWith('http://') || query.startsWith('https://')) {
-          targetUrl = query;
-        } else if (query.includes('.') && !query.includes(' ')) {
-          targetUrl = 'https://' + query;
-        } else {
-          targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-        }
+    let nextTabId = 2;
+    let tabs = [{
+      id: 1,
+      title: 'New Tab',
+      address: 'waves:newtab',
+      url: '../newtab.html',
+      active: true
+    }];
 
-        viewport.src = targetUrl;
-        omnibox.blur(); 
+    function createTab(title = 'New Tab', address = 'waves:newtab', url = '../newtab.html') {
+      return {
+        id: nextTabId++,
+        title,
+        address,
+        url,
+        active: false
+      };
+    }
+
+    function getActiveTab() {
+      return tabs.find((tab) => tab.active) || tabs[0];
+    }
+
+    function updateOmniboxFromActiveTab() {
+      const activeTab = getActiveTab();
+      if (activeTab) {
+        omnibox.value = activeTab.address || 'waves:newtab';
+      }
+    }
+
+    function renderTabs() {
+      document.querySelectorAll('.tabItem').forEach((tabElement) => tabElement.remove());
+
+      tabs.forEach((tab) => {
+        const tabElement = document.createElement('div');
+        tabElement.className = `tabItem${tab.active ? ' active' : ''}`;
+        tabElement.dataset.tabId = tab.id;
+
+        const title = document.createElement('span');
+        title.className = 'tabTitle';
+        title.textContent = tab.title;
+
+        const close = document.createElement('span');
+        close.className = 'tabClose material-symbols-outlined';
+        close.textContent = 'close';
+        close.title = 'Close tab';
+
+        tabElement.appendChild(title);
+        tabElement.appendChild(close);
+
+        tabElement.addEventListener('click', (event) => {
+          if (event.target === close || close.contains(event.target)) {
+            event.stopPropagation();
+            deleteTab(tab.id);
+            return;
+          }
+          activateTab(tab.id);
+        });
+
+        tabRow.insertBefore(tabElement, addTabButton);
+      });
+    }
+
+    function syncViewportToActiveTab() {
+      const activeTab = getActiveTab();
+      if (!activeTab) return;
+      viewport.src = activeTab.url;
+      updateOmniboxFromActiveTab();
+    }
+
+    function activateTab(tabId) {
+      const targetTab = tabs.find((tab) => tab.id === tabId);
+      if (!targetTab) return;
+
+      tabs.forEach((tab) => {
+        tab.active = tab.id === tabId;
+      });
+
+      renderTabs();
+      syncViewportToActiveTab();
+    }
+
+    function deleteTab(tabId) {
+      const index = tabs.findIndex((tab) => tab.id === tabId);
+      if (index === -1) return;
+
+      const wasActive = tabs[index].active;
+      tabs.splice(index, 1);
+
+      if (tabs.length === 0) {
+        tabs.push(createTab());
+      }
+
+      if (wasActive) {
+        const nextIndex = Math.min(index, tabs.length - 1);
+        tabs[nextIndex].active = true;
+      }
+
+      renderTabs();
+      syncViewportToActiveTab();
+    }
+
+    function resolveUrl(query) {
+      const trimmed = query.trim();
+      if (!trimmed) return null;
+
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return trimmed;
+      }
+
+      if (trimmed.startsWith('waves:')) {
+        return '../newtab.html';
+      }
+
+      if (trimmed.includes('.') && !trimmed.includes(' ')) {
+        return 'https://' + trimmed;
+      }
+
+      return 'https://www.google.com/search?q=' + encodeURIComponent(trimmed);
+    }
+
+    function navigateActiveTab(query) {
+      const activeTab = getActiveTab();
+      if (!activeTab) return;
+
+      const resolvedUrl = resolveUrl(query);
+      if (!resolvedUrl) return;
+
+      const friendlyTitle = query.startsWith('http://') || query.startsWith('https://')
+        ? (() => {
+            try {
+              return new URL(resolvedUrl).hostname.replace(/^www\./, '');
+            } catch (error) {
+              return query;
+            }
+          })()
+        : query.startsWith('waves:')
+          ? 'New Tab'
+          : query;
+
+      activeTab.title = friendlyTitle;
+      activeTab.address = query;
+      activeTab.url = resolvedUrl;
+
+      renderTabs();
+      viewport.src = resolvedUrl;
+      omnibox.blur();
+    }
+
+    addTabButton.addEventListener('click', () => {
+      const newTab = createTab();
+      newTab.active = true;
+      tabs.forEach((tab) => {
+        tab.active = false;
+      });
+      tabs.push(newTab);
+      renderTabs();
+      syncViewportToActiveTab();
+    });
+
+    omnibox.addEventListener('keypress', (event) => {
+      if (event.key === 'Enter' && omnibox.value.trim() !== '') {
+        navigateActiveTab(omnibox.value);
       }
     });
 
     document.getElementById('btn-back').addEventListener('click', () => {
-      try { viewport.contentWindow.history.back(); } catch(e) {}
+      try { viewport.contentWindow.history.back(); } catch (error) {}
     });
 
     document.getElementById('btn-forward').addEventListener('click', () => {
-      try { viewport.contentWindow.history.forward(); } catch(e) {}
+      try { viewport.contentWindow.history.forward(); } catch (error) {}
     });
 
     document.getElementById('btn-refresh').addEventListener('click', () => {
-      try { 
-        viewport.contentWindow.location.reload(); 
-      } catch(e) { 
-        viewport.src = viewport.src; 
+      const activeTab = getActiveTab();
+      if (!activeTab) return;
+
+      try {
+        viewport.contentWindow.location.reload();
+      } catch (error) {
+        viewport.src = activeTab.url;
       }
     });
+
+    viewport.addEventListener('load', () => {
+      const activeTab = getActiveTab();
+      if (!activeTab) return;
+
+      try {
+        const titleFromDocument = viewport.contentDocument?.title?.trim();
+        if (titleFromDocument) {
+          activeTab.title = titleFromDocument;
+          renderTabs();
+        }
+      } catch (error) {}
+    });
+
+    renderTabs();
+    updateOmniboxFromActiveTab();
   </script>
 </body>
 </html>
