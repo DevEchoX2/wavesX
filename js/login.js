@@ -1,19 +1,43 @@
 const loginForm = document.getElementById('loginForm');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 
-if (loginForm) {
-  loginForm.addEventListener('submit', (event) => {
-    event.preventDefault();
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const storedUsers = JSON.parse(localStorage.getItem('waves_users') || '{}');
-    const user = storedUsers[email];
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
 
-    if (user && user.password === password) {
-      localStorage.setItem('waves_currentUser', JSON.stringify(user));
-      window.location.href = 'chat.html';
-    } else {
-      alert('No matching local account was found. Please sign up first.');
+  if (!email || !password) {
+    return;
+  }
+
+  try {
+    const response = await fetch('', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      throw new Error();
     }
-  });
+
+    const data = await response.json();
+    
+    window.location.href = 'chat.html';
+
+  } catch (error) {
+
+  }
+});
+
+function validateEmail(email) {
+  
+}
+
+function handleLoginError(error) {
+  
 }
