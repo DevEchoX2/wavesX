@@ -8,13 +8,11 @@
 </head>
 <body>
   <div class="app-container">
-    
     <aside class="sidebar-left">
       <div class="sidebar-tabs">
         <button class="tab-btn active"><i class="fa-solid fa-hashtag"></i> Channels</button>
         <button class="tab-btn"><i class="fa-regular fa-message"></i> DMs</button>
       </div>
-
       <div class="channel-list" id="channelList">
         <div class="category">
           <div class="category-header">
@@ -24,20 +22,17 @@
               <i class="fa-solid fa-plus"></i>
             </div>
           </div>
-          
           <div class="subcategory"><i class="fa-solid fa-chevron-down"></i> Information</div>
           <div class="channel-item" data-channel="announcements"><i class="fa-solid fa-bullhorn"></i> announcements</div>
           <div class="channel-item" data-channel="updates"><i class="fa-solid fa-bell"></i> updates</div>
-          
           <div class="subcategory"><i class="fa-solid fa-chevron-down"></i> Social</div>
           <div class="channel-item active" data-channel="general"><i class="fa-solid fa-hashtag"></i> general</div>
         </div>
       </div>
-      
       <div class="current-user">
         <div class="user-info">
           <div class="avatar">
-            <img id="currentUserPfp" alt="pfp">
+            <img id="currentUserPfp" alt="pfp" src="">
           </div>
           <span id="displayUsername" class="username"></span>
         </div>
@@ -50,9 +45,7 @@
         <i class="fa-solid fa-hashtag header-hash"></i>
         <span id="chatTitle">general</span>
       </header>
-
       <div class="message-container" id="messageContainer"></div>
-
       <div class="input-area">
         <div class="input-wrapper">
           <button class="action-btn attach-btn"><i class="fa-solid fa-circle-plus"></i></button>
@@ -67,13 +60,9 @@
       <div class="members-header">
         <i class="fa-solid fa-user-group"></i> Members
       </div>
-      
       <div class="members-list" id="membersList"></div>
     </aside>
-
   </div>
-  
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="../js/chat.js"></script>
 </body>
 </html>
