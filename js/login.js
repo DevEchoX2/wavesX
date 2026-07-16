@@ -1,20 +1,11 @@
-const loginForm = document.getElementById('loginForm');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-
-loginForm.addEventListener('submit', async (e) => {
+document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-
-  if (!email || !password) {
-    alert('Please fill in all fields');
-    return;
-  }
+  
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
   try {
-    const response = await fetch('http://localhost:3000/login', {
+    const res = await fetch('http://localhost:5000/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -22,17 +13,17 @@ loginForm.addEventListener('submit', async (e) => {
       body: JSON.stringify({ email, password })
     });
 
-    if (!response.ok) {
-      throw new Error('Login failed');
-    }
+    const data = await res.json();
 
-    const data = await response.json();
-    
-    if (data.token) {
+    if (res.ok) {
       localStorage.setItem('waves_token', data.token);
-      window.location.href = 'chat.html';
+      localStorage.setItem('waves_username', data.username);
+      localStorage.setItem('waves_pfp', data.pfpUrl);
+      window.location.href = 'chat.html'; 
+    } else {
+      alert(data.error);
     }
-  } catch (error) {
-    alert(error.message);
+  } catch (err) {
+    alert('Failed to connect to the accounts server.');
   }
 });
