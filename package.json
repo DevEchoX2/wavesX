@@ -1,10 +1,9 @@
 {
-  "name": "waves-backend",
+  "name": "waves",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "acc-server.js",
   "scripts": {
-    "start-chat": "node server.js",
-    "start-accounts": "node acc-server.js"
+    "start": "node acc-server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
