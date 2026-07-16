@@ -1,49 +1,72 @@
+const token = localStorage.getItem('waves_token');
+const savedUsername = localStorage.getItem('waves_username');
+const savedPfp = localStorage.getItem('waves_pfp');
+
+if (!token || !savedUsername) {
+  window.location.href = 'login.html';
+}
+
+const defaultPfp = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+
+document.getElementById('displayUsername').innerText = savedUsername;
+document.getElementById('currentUserPfp').src = savedPfp || defaultPfp;
+
+const membersList = document.getElementById('membersList');
+function updateMembersList() {
+  membersList.innerHTML = `
+    <div class="member-category">ONLINE — 1</div>
+    <div class="member-item">
+      <div class="avatar-wrapper">
+        <div class="avatar">
+          <img src="${savedPfp || defaultPfp}" alt="pfp">
+        </div>
+        <div class="status-dot online"></div>
+      </div>
+      <span class="member-name blue-text">${escapeHTML(savedUsername)}</span>
+    </div>
+  `;
+}
+updateMembersList();
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('waves_token');
+  localStorage.removeItem('waves_username');
+  localStorage.removeItem('waves_pfp');
+  window.location.href = 'login.html';
+});
+
+const socket = io('http://localhost:3000');
 const messageContainer = document.getElementById('messageContainer');
 const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
-const membersList = document.getElementById('membersList');
 const channelItems = document.querySelectorAll('.channel-item');
-const chatHeader = document.getElementById('chatHeader');
+const chatTitle = document.getElementById('chatTitle');
 
-const socket = io('http://localhost:3000');
 let currentChannelId = 'general';
-
 socket.emit('joinChannel', currentChannelId);
 
 socket.on('receiveMessage', (data) => {
-  renderMessage(data);
-});
-
-function renderMessage(data) {
-  const { id, user, text, timestamp, roles = [] } = data;
-
   const msgDiv = document.createElement('div');
   msgDiv.className = 'message';
-  msgDiv.dataset.id = id;
-
-  const roleTagsHTML = roles.map(role => {
-    const color = role.color || '#fff';
-    const borderColor = role.color ? `${role.color}40` : '#444';
-    return `<span class="role-tag" style="color: ${color}; border-color: ${borderColor}">${role.name}</span>`;
-  }).join('');
-
+  
+  const userPfp = data.pfp || defaultPfp;
+  
   msgDiv.innerHTML = `
     <div class="avatar">
-      <img src="${user.avatarUrl || 'default-avatar.png'}" alt="Avatar">
+      <img src="${userPfp}" alt="pfp">
     </div>
     <div class="message-content">
       <div class="message-header">
-        <span class="username" style="color: ${user.color || '#fff'}">${user.name}</span>
-        ${roleTagsHTML}
-        <span class="timestamp">${timestamp}</span>
+        <span class="msg-username">${escapeHTML(data.username)}</span>
+        <span class="msg-timestamp">${data.timestamp}</span>
       </div>
-      <div class="message-text">${escapeHTML(text)}</div>
+      <div class="msg-text">${escapeHTML(data.text)}</div>
     </div>
   `;
-
+  
   messageContainer.appendChild(msgDiv);
-  scrollToBottom();
-}
+  messageContainer.scrollTop = messageContainer.scrollHeight;
+});
 
 function sendMessage() {
   const text = messageInput.value.trim();
@@ -51,13 +74,17 @@ function sendMessage() {
 
   socket.emit('sendMessage', {
     channelId: currentChannelId,
-    text: text,
-    user: { name: 'Guest', avatarUrl: 'default-avatar.png', color: '#fff' },
-    roles: []
+    username: savedUsername,
+    pfp: savedPfp || defaultPfp,
+    text: text
   });
-
   messageInput.value = '';
 }
+
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
 
 channelItems.forEach(item => {
   item.addEventListener('click', () => {
@@ -67,24 +94,12 @@ channelItems.forEach(item => {
     socket.emit('leaveChannel', currentChannelId);
     
     currentChannelId = item.dataset.channel;
-    chatHeader.innerText = `# ${currentChannelId}`;
+    chatTitle.innerText = currentChannelId;
     messageContainer.innerHTML = ''; 
     
     socket.emit('joinChannel', currentChannelId);
   });
 });
-
-sendBtn.addEventListener('click', sendMessage);
-messageInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
-function scrollToBottom() {
-  messageContainer.scrollTop = messageContainer.scrollHeight;
-}
 
 function escapeHTML(str) {
   return str.replace(/[&<>'"]/g, 
