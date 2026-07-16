@@ -9,7 +9,7 @@ body {
 
 :root {
   --blue-accent: #2563eb;
-  --blue-hover: #3b82f6;
+  --blue-hover: #f91880;
   --bg-darker: #050505;
   --bg-dark: #0a0a0a;
   --bg-panel: #121212;
@@ -81,12 +81,9 @@ body {
   color: var(--text-muted);
 }
 
-.category-actions i {
-  cursor: pointer;
-}
-
 .category-actions i:hover {
   color: #fff;
+  cursor: pointer;
 }
 
 .subcategory {
@@ -112,12 +109,7 @@ body {
   gap: 8px;
 }
 
-.channel-item:hover {
-  background-color: var(--bg-hover);
-  color: #dedede;
-}
-
-.channel-item.active {
+.channel-item:hover, .channel-item.active {
   background-color: var(--bg-hover);
   color: #fff;
 }
@@ -157,9 +149,7 @@ body {
   font-size: 16px;
 }
 
-.icon-btn:hover {
-  color: #fff;
-}
+.icon-btn:hover { color: #fff; }
 
 .chat-main {
   flex: 1;
@@ -256,12 +246,9 @@ body {
   font-size: 18px;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-.action-btn:hover {
-  color: #fff;
-}
+.action-btn:hover { color: #fff; }
 
 .sidebar-right {
   width: 240px;
@@ -304,13 +291,9 @@ body {
   margin-bottom: 2px;
 }
 
-.member-item:hover {
-  background-color: var(--bg-hover);
-}
+.member-item:hover { background-color: var(--bg-hover); }
 
-.avatar-wrapper {
-  position: relative;
-}
+.avatar-wrapper { position: relative; }
 
 .status-dot {
   position: absolute;
@@ -322,9 +305,7 @@ body {
   border: 2px solid var(--bg-darker);
 }
 
-.status-dot.online {
-  background-color: #23a559;
-}
+.status-dot.online { background-color: #23a559; }
 
 .member-name.blue-text {
   color: var(--blue-hover);
