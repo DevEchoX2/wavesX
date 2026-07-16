@@ -1,10 +1,9 @@
-const socket = io('http://localhost:3000');
-
 const currentUser = localStorage.getItem('waves_username');
 const currentPfp = localStorage.getItem('waves_pfp');
 
-if (!currentUser) {
-  window.location.href = 'login.html'; 
+if (!currentUser || !currentPfp) {
+  window.location.href = 'login.html';
+  throw new Error('Unauthorized');
 }
 
 const currentUserPfp = document.getElementById('currentUserPfp');
@@ -15,8 +14,9 @@ const chatTitle = document.getElementById('chatTitle');
 const messageContainer = document.getElementById('messageContainer');
 const messageInput = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
+const membersList = document.getElementById('membersList');
 
-if (currentUserPfp && currentPfp) currentUserPfp.src = currentPfp;
+if (currentUserPfp) currentUserPfp.src = currentPfp;
 if (displayUsername) displayUsername.textContent = currentUser;
 
 if (logoutBtn) {
@@ -28,7 +28,26 @@ if (logoutBtn) {
 }
 
 let currentChannel = 'general';
-socket.emit('joinChannel', currentChannel);
+let eventSource = null;
+
+function joinChannel(channel) {
+  if (eventSource) eventSource.close();
+  currentChannel = channel;
+  
+  const streamUrl = `/api/stream?channel=${channel}&username=${encodeURIComponent(currentUser)}&pfpUrl=${encodeURIComponent(currentPfp)}`;
+  eventSource = new EventSource(streamUrl);
+  
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === 'message') {
+      appendMessage(data);
+    } else if (data.type === 'onlineUsers') {
+      updateMembersList(data.users);
+    }
+  };
+}
+
+joinChannel(currentChannel);
 
 channelItems.forEach(item => {
   item.addEventListener('click', (e) => {
@@ -36,41 +55,40 @@ channelItems.forEach(item => {
     const clickedItem = e.currentTarget;
     clickedItem.classList.add('active');
 
-    socket.emit('leaveChannel', currentChannel);
-    currentChannel = clickedItem.dataset.channel;
-    socket.emit('joinChannel', currentChannel);
-
-    if (chatTitle) chatTitle.textContent = currentChannel;
+    const newChannel = clickedItem.dataset.channel;
+    if (chatTitle) chatTitle.textContent = newChannel;
     if (messageContainer) messageContainer.innerHTML = '';
+    
+    joinChannel(newChannel);
   });
 });
 
-function sendMessage() {
+async function sendMessage() {
   const text = messageInput.value.trim();
   if (text) {
-    socket.emit('sendMessage', {
-      channelId: currentChannel,
-      username: currentUser,
-      pfp: currentPfp,
-      text: text
+    await fetch('/api/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        channelId: currentChannel,
+        username: currentUser,
+        pfp: currentPfp,
+        text: text
+      })
     });
     messageInput.value = '';
   }
 }
 
-if (sendBtn) {
-  sendBtn.addEventListener('click', sendMessage);
-}
+if (sendBtn) sendBtn.addEventListener('click', sendMessage);
 
 if (messageInput) {
   messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
+    if (e.key === 'Enter') sendMessage();
   });
 }
 
-socket.on('receiveMessage', (data) => {
+function appendMessage(data) {
   if (!messageContainer) return;
   
   const msgElement = document.createElement('div');
@@ -90,8 +108,26 @@ socket.on('receiveMessage', (data) => {
   `;
   
   msgElement.querySelector('.msg-text').textContent = data.text;
-  
   messageContainer.appendChild(msgElement);
-  
   messageContainer.scrollTop = messageContainer.scrollHeight;
-});
+}
+
+function updateMembersList(users) {
+  if (!membersList) return;
+  membersList.innerHTML = `<div class="member-category">ONLINE — ${users.length}</div>`;
+  
+  users.forEach(user => {
+    const memberElement = document.createElement('div');
+    memberElement.className = 'member-item';
+    const isMe = user.username === currentUser;
+    
+    memberElement.innerHTML = `
+      <div class="avatar-wrapper">
+          <img src="${user.pfpUrl}" alt="user" style="width: 32px; height: 32px; border-radius: 50%;">
+          <div class="status-dot online"></div>
+      </div>
+      <span class="member-name ${isMe ? 'blue-text' : ''}">${user.username}</span>
+    `;
+    membersList.appendChild(memberElement);
+  });
+}
