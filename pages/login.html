@@ -2,33 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Waves</title>
   <link rel="stylesheet" href="../css/auth.css">
 </head>
 <body>
-  <div class="wavesContainer active">
-    <div class="wave wave1"></div>
-    <div class="wave wave2"></div>
-    <div class="wave wave3"></div>
-  </div>
-
-  <div class="auth-card">
-    <div class="auth-header">
-      <h2>Account</h2>
-      <br>
-      <h1>Log In</h1>
-      <p>Sign in to your Waves account.</p>
-    </div>
-    <form id="loginForm" class="form-group">
-      <input type="email" id="email" class="form-input" placeholder="Email" required>
-      <input type="password" id="password" class="form-input" placeholder="Password" required>
-      <button type="submit" class="submit-btn">Log In</button>
+  <div class="auth-container">
+    <h2>Welcome Back</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Log In</button>
     </form>
-    <div class="auth-footer">
-      <span>Don't have an account? <a href="signup.html">Sign up</a></span>
-      <a href="#">Forgot password?</a>
-    </div>
+    <p>Don't have an account? <a href="signup.html">Sign up</a></p>
   </div>
   <script src="../js/login.js"></script>
 </body>
