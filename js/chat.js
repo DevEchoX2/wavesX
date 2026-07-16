@@ -4,27 +4,46 @@ const currentUser = localStorage.getItem('waves_username');
 const currentPfp = localStorage.getItem('waves_pfp');
 
 if (!currentUser) {
-  window.location.href = 'login.html';
+  window.location.href = 'login.html'; 
+}
+
+const currentUserPfp = document.getElementById('currentUserPfp');
+const displayUsername = document.getElementById('displayUsername');
+const logoutBtn = document.getElementById('logoutBtn');
+const channelItems = document.querySelectorAll('.channel-item');
+const chatTitle = document.getElementById('chatTitle');
+const messageContainer = document.getElementById('messageContainer');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+
+if (currentUserPfp && currentPfp) currentUserPfp.src = currentPfp;
+if (displayUsername) displayUsername.textContent = currentUser;
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('waves_username');
+    localStorage.removeItem('waves_pfp');
+    window.location.href = 'login.html';
+  });
 }
 
 let currentChannel = 'general';
-const chatDisplay = document.getElementById('chat-display');
-const messageInput = document.getElementById('message-input');
-const sendButton = document.getElementById('send-button');
-const channelButtons = document.querySelectorAll('.channel-btn');
-
 socket.emit('joinChannel', currentChannel);
 
-if (channelButtons) {
-  channelButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      socket.emit('leaveChannel', currentChannel);
-      currentChannel = e.target.dataset.channel || e.target.id;
-      chatDisplay.innerHTML = '';
-      socket.emit('joinChannel', currentChannel);
-    });
+channelItems.forEach(item => {
+  item.addEventListener('click', (e) => {
+    channelItems.forEach(btn => btn.classList.remove('active'));
+    const clickedItem = e.currentTarget;
+    clickedItem.classList.add('active');
+
+    socket.emit('leaveChannel', currentChannel);
+    currentChannel = clickedItem.dataset.channel;
+    socket.emit('joinChannel', currentChannel);
+
+    if (chatTitle) chatTitle.textContent = currentChannel;
+    if (messageContainer) messageContainer.innerHTML = '';
   });
-}
+});
 
 function sendMessage() {
   const text = messageInput.value.trim();
@@ -39,8 +58,8 @@ function sendMessage() {
   }
 }
 
-if (sendButton) {
-  sendButton.addEventListener('click', sendMessage);
+if (sendBtn) {
+  sendBtn.addEventListener('click', sendMessage);
 }
 
 if (messageInput) {
@@ -52,18 +71,27 @@ if (messageInput) {
 }
 
 socket.on('receiveMessage', (data) => {
-  if (!chatDisplay) return;
+  if (!messageContainer) return;
   
   const msgElement = document.createElement('div');
   msgElement.className = 'message';
+  
   msgElement.innerHTML = `
-    <img src="${data.pfp}" alt="pfp" class="message-pfp" style="width: 40px; height: 40px; border-radius: 50%;">
+    <div class="avatar">
+      <img src="${data.pfp}" alt="pfp" style="width: 40px; height: 40px; border-radius: 50%;">
+    </div>
     <div class="message-content">
-      <strong>${data.username}</strong> <span class="timestamp" style="font-size: 0.8em; color: gray;">${data.timestamp}</span>
-      <p>${data.text}</p>
+      <div class="message-header">
+        <span class="msg-username">${data.username}</span>
+        <span class="msg-timestamp">${data.timestamp}</span>
+      </div>
+      <div class="msg-text"></div> 
     </div>
   `;
   
-  chatDisplay.appendChild(msgElement);
-  chatDisplay.scrollTop = chatDisplay.scrollHeight;
+  msgElement.querySelector('.msg-text').textContent = data.text;
+  
+  messageContainer.appendChild(msgElement);
+  
+  messageContainer.scrollTop = messageContainer.scrollHeight;
 });
