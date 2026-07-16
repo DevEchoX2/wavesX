@@ -1,6 +1,4 @@
-const signupForm = document.getElementById('signupForm');
-
-signupForm.addEventListener('submit', async (e) => {
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
   const username = document.getElementById('username').value;
@@ -8,9 +6,11 @@ signupForm.addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value;
 
   try {
-    const res = await fetch('http://localhost:3000/signup', {
+    const res = await fetch('http://localhost:5000/signup', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ username, email, password })
     });
 
@@ -19,13 +19,12 @@ signupForm.addEventListener('submit', async (e) => {
     if (res.ok) {
       localStorage.setItem('waves_token', data.token);
       localStorage.setItem('waves_username', data.username);
-      localStorage.setItem('waves_pfp', data.pfpUrl || '');
+      localStorage.setItem('waves_pfp', data.pfpUrl);
       window.location.href = 'chat.html';
     } else {
       alert(data.error);
     }
   } catch (err) {
-    console.error(err);
-    alert("Could not connect to server.");
+    alert('Failed to connect to the accounts server.');
   }
 });
