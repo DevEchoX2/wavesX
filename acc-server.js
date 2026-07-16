@@ -8,13 +8,19 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
-const DB_FILE = path.join(__dirname, 'users.json');
+
+const DATA_DIR = path.join(__dirname, 'data');
+const DB_FILE = path.join(DATA_DIR, 'users.json');
 
 function readUsers() {
   try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
     if (!fs.existsSync(DB_FILE)) {
       fs.writeFileSync(DB_FILE, JSON.stringify([]));
     }
+    
     const data = fs.readFileSync(DB_FILE, 'utf8');
     return JSON.parse(data);
   } catch (err) {
