@@ -24,9 +24,15 @@
 <div class="uiWrapper" id="uiModule">
   <div class="sideNav">
     <button class="navBtn active"><span class="material-symbols-outlined">home</span></button>
-    <button class="navBtn"><span class="material-symbols-outlined">group</span></button>
-    <button class="navBtn"><span class="material-symbols-outlined">dashboard</span></button>
-    <button class="navBtn"><span class="material-symbols-outlined">desktop_windows</span></button>
+    <button class="navBtn" onclick="window.location.href='pages/videos.html'">
+      <span class="material-symbols-outlined">movie</span>
+    </button>
+    <button class="navBtn" onclick="window.location.href='pages/streak.html'">
+      <span class="material-symbols-outlined">local_fire_department</span>
+    </button>
+    <button class="navBtn" onclick="window.location.href='pages/donate.html'">
+      <span class="material-symbols-outlined">volunteer_activism</span>
+    </button>
   </div>
 
   <div class="mainPanel">
@@ -76,11 +82,11 @@
     
     setTimeout(() => {
       uiModule.classList.add('active');
-    }, 1500);
+    }, 750);
 
     setTimeout(() => {
       waves.classList.remove('active');
-    }, 3000);
+    }, 1500);
   });
 
   closeTrigger.addEventListener('click', () => {
