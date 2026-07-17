@@ -1,0 +1,84 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  background-color: #050505;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+
+.donateModule {
+  background-color: #0d0d0d;
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 40px;
+  width: 400px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.headerIcon {
+  font-size: 48px;
+  color: #fff;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+p {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.cashAppBtn {
+  background-color: #00D632;
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.cashAppBtn:hover {
+  background-color: #00e636;
+  transform: translateY(-2px);
+}
+
+.backBtn {
+  background-color: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #888;
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  margin-top: 5px;
+}
+
+.backBtn:hover {
+  background-color: #2a2a2a;
+  color: #fff;
+}
