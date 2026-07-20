@@ -43,7 +43,7 @@
 
   gamesGrid.innerHTML = '<div class="errorMsg">Loading games…</div>';
 
-  fetch('../selenite.json')
+  fetch('../game.json')
     .then(response => {
       if (!response.ok) throw new Error('Unable to load catalog');
       return response.json();
