@@ -17,21 +17,21 @@ function loadGames() {
   
   fetch(fetchUrl)
     .then(response => {
-      if (!response.ok) throw new Error();
+      if (!response.ok) throw new Error("Failed to load");
       return response.json();
     })
     .then(data => {
       let rawData = Array.isArray(data) ? data : [];
       
-      if (currentSource !== 'game') {
+      if (currentSource === 'zone') {
         gamesData = rawData.map(game => {
           let baseUrl = UGS_HTML_URL1;
           if (game.repo === 2 || game.repo === "ugs-2") baseUrl = UGS_HTML_URL2;
           if (game.repo === 3 || game.repo === "ugs-3") baseUrl = UGS_HTML_URL3;
           
           return {
-            title: game.title || game.name,
-            image: game.image,
+            title: game.title || game.name || 'Unknown Game',
+            image: game.image || game.cover || '',
             url: baseUrl + (game.link || '')
           };
         });
@@ -41,8 +41,8 @@ function loadGames() {
 
       renderGames(gamesData);
     })
-    .catch(() => {
-      gamesGrid.innerHTML = '<div class="errorMsg">Failed to load games</div>';
+    .catch(err => {
+      gamesGrid.innerHTML = `<div class="errorMsg">Failed to load games from ${fetchUrl}</div>`;
     });
 }
 
@@ -55,8 +55,8 @@ function renderGames(games) {
     const title = game.title || game.name || 'Unknown Game';
     const image = game.image || game.cover || '';
     
-    const targetUrl = game.url || (game.directory ? `../${game.directory}/` : '#');
-    card.href = `browser.html?url=${encodeURIComponent(targetUrl)}`;
+    const rawUrl = game.url || (game.directory ? `../${game.directory}/` : '#');
+    card.href = `browser.html?url=${encodeURIComponent(rawUrl)}`;
     card.className = 'gameCard';
 
     const img = document.createElement('img');
