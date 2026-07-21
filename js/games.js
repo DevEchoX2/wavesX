@@ -3,17 +3,19 @@ const searchInput = document.getElementById('searchInput');
 const gameCountDisplay = document.getElementById('gameCount');
 const categorySelect = document.getElementById('categorySelect');
 
-const COVER_URL = "https://cdn.jsdelivr.net/gh/gn-math/covers@main";
-const HTML_URL = "https://cdn.jsdelivr.net/gh/gn-math/html@main";
+const UGS_API = "https://cdn.jsdelivr.net/gh/Sea-Math/ugs-json@main/games.json";
+const UGS_HTML_URL1 = "https://cdn.jsdelivr.net/gh/Sea-Math/ugs-1@main/";
+const UGS_HTML_URL2 = "https://cdn.jsdelivr.net/gh/Sea-Math/ugs-2@main/";
+const UGS_HTML_URL3 = "https://cdn.jsdelivr.net/gh/Sea-Math/ugs-3@main/";
 
 let gamesData = [];
 let currentSource = categorySelect.value;
 
 function loadGames() {
   gamesGrid.innerHTML = '<div class="errorMsg">Loading...</div>';
-  const jsonFile = currentSource === 'game' ? '../game.json' : '../zone.json';
+  const fetchUrl = currentSource === 'game' ? '../game.json' : UGS_API;
   
-  fetch(jsonFile)
+  fetch(fetchUrl)
     .then(response => {
       if (!response.ok) throw new Error();
       return response.json();
@@ -21,25 +23,18 @@ function loadGames() {
     .then(data => {
       let rawData = Array.isArray(data) ? data : [];
       
-      if (currentSource === 'zone') {
-        gamesData = rawData
-          .filter(game => game.id !== -1 && game.id !== 1 && game.id !== 64 && game.name && game.url)
-          .map(game => {
-            let processedUrl = game.url.replace(/{HTML_URL}/g, HTML_URL).replace(/{COVER_URL}/g, COVER_URL);
-            let processedImage = game.cover 
-              ? game.cover.replace(/{COVER_URL}/g, COVER_URL).replace(/{HTML_URL}/g, HTML_URL) 
-              : '';
-
-            if (game.id === 0) {
-                processedUrl = "https://cdn.jsdelivr.net/gh/bubbls/youtube-playables@main/bowmasters/index.html";
-            }
-
-            return {
-              title: game.name,
-              image: processedImage,
-              url: processedUrl
-            };
-          });
+      if (currentSource !== 'game') {
+        gamesData = rawData.map(game => {
+          let baseUrl = UGS_HTML_URL1;
+          if (game.repo === 2 || game.repo === "ugs-2") baseUrl = UGS_HTML_URL2;
+          if (game.repo === 3 || game.repo === "ugs-3") baseUrl = UGS_HTML_URL3;
+          
+          return {
+            title: game.title || game.name,
+            image: game.image,
+            url: baseUrl + (game.link || '')
+          };
+        });
       } else {
         gamesData = rawData;
       }
@@ -47,7 +42,7 @@ function loadGames() {
       renderGames(gamesData);
     })
     .catch(() => {
-      gamesGrid.innerHTML = `<div class="errorMsg">Failed to load ${jsonFile}</div>`;
+      gamesGrid.innerHTML = '<div class="errorMsg">Failed to load games</div>';
     });
 }
 
