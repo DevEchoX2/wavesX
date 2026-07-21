@@ -55,9 +55,8 @@ function renderGames(games) {
     const title = game.title || game.name || 'Unknown Game';
     const image = game.image || game.cover || '';
     
-    const href = game.url || (game.directory ? `../${game.directory}/` : '#');
-
-    card.href = href;
+    const targetUrl = game.url || (game.directory ? `../${game.directory}/` : '#');
+    card.href = `browser.html?url=${encodeURIComponent(targetUrl)}`;
     card.className = 'gameCard';
 
     const img = document.createElement('img');
