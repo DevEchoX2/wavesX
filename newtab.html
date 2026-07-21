@@ -61,7 +61,7 @@
     function formatURL(query) {
       if (query.startsWith('http://') || query.startsWith('https://')) return query;
       if (query.includes('.') && !query.includes(' ')) return 'https://' + query;
-      return 'https://www.google.com/search?q=' + encodeURIComponent(query);
+      return 'https://duckduckgo.com/?q=' + encodeURIComponent(query);
     }
 
     const searchInput = document.getElementById('nt-search');
