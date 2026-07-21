@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <iframe id="viewport" src="../newtab.html" class="viewPort"></iframe>
+  <iframe id="viewport" class="viewPort"></iframe>
 
   <script>
     const omnibox = document.getElementById('omnibox');
@@ -61,12 +61,29 @@
     const tabRow = document.querySelector('.tabRow');
     const addTabButton = document.getElementById('btn-add-tab');
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const passedUrl = urlParams.get('url');
+
+    let initialUrl = '../newtab.html';
+    let initialAddress = 'waves:newtab';
+    let initialTitle = 'New Tab';
+
+    if (passedUrl) {
+      initialUrl = passedUrl;
+      initialAddress = passedUrl;
+      try {
+        initialTitle = new URL(passedUrl).hostname.replace(/^www\./, '');
+      } catch (e) {
+        initialTitle = 'Game';
+      }
+    }
+
     let nextTabId = 2;
     let tabs = [{
       id: 1,
-      title: 'New Tab',
-      address: 'waves:newtab',
-      url: '../newtab.html',
+      title: initialTitle,
+      address: initialAddress,
+      url: initialUrl,
       active: true
     }];
 
@@ -239,7 +256,7 @@
     });
 
     renderTabs();
-    updateOmniboxFromActiveTab();
+    syncViewportToActiveTab();
   </script>
 </body>
 </html>
