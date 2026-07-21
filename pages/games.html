@@ -10,15 +10,15 @@
 <body>
 
 <div class="topBar">
-  <button class="categoryDropdown">
+  <button class="categoryDropdown" id="categoryToggle">
     <span class="material-symbols-outlined">grid_view</span>
-    <span>selenite</span>
+    <span id="categoryLabel">game</span>
     <span class="material-symbols-outlined">expand_more</span>
   </button>
   
   <div class="searchWrapper">
     <span class="material-symbols-outlined searchIcon">search</span>
-    <input type="text" id="searchInput" placeholder="Search selenite...">
+    <input type="text" id="searchInput" placeholder="Search...">
   </div>
   
   <div class="gameCountWrapper">
@@ -35,69 +35,6 @@
   <span class="material-symbols-outlined">arrow_back</span>
 </button>
 
-<script>
-  const gamesGrid = document.getElementById('gamesGrid');
-  const searchInput = document.getElementById('searchInput');
-  const gameCountDisplay = document.getElementById('gameCount');
-  let gamesData = [];
-
-  gamesGrid.innerHTML = '<div class="errorMsg">Loading games…</div>';
-
-  fetch('../game.json')
-    .then(response => {
-      if (!response.ok) throw new Error('Unable to load catalog');
-      return response.json();
-    })
-    .then(data => {
-      gamesData = Array.isArray(data) ? data : [];
-      renderGames(gamesData);
-    })
-    .catch(() => {
-      gamesGrid.innerHTML = '<div class="errorMsg">Failed to load games data. Please ensure selenite.json exists.</div>';
-    });
-
-  function renderGames(games) {
-    gamesGrid.innerHTML = '';
-    gameCountDisplay.textContent = games.length;
-
-    games.forEach(game => {
-      const card = document.createElement('a');
-      const title = game.title || game.name || 'Unknown Game';
-      const image = game.image || '';
-      const href = game.url || (game.directory ? `../selenite-old/${game.directory}/` : '#');
-
-      card.href = href;
-      card.className = 'gameCard';
-
-      const img = document.createElement('img');
-      img.src = image;
-      img.alt = title;
-      img.loading = 'lazy';
-      img.onerror = () => {
-        img.remove();
-        card.classList.add('imageMissing');
-      };
-
-      const titleBox = document.createElement('div');
-      titleBox.className = 'gameTitle';
-      titleBox.textContent = title;
-
-      card.appendChild(img);
-      card.appendChild(titleBox);
-      gamesGrid.appendChild(card);
-    });
-  }
-
-  searchInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const filteredGames = gamesData.filter(game => {
-      const title = (game.title || game.name || '').toLowerCase();
-      const directory = (game.directory || '').toLowerCase();
-      return title.includes(searchTerm) || directory.includes(searchTerm);
-    });
-    renderGames(filteredGames);
-  });
-</script>
-
+<script src="../js/games.js"></script>
 </body>
 </html>
