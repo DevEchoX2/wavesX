@@ -8,7 +8,8 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
   body { background-color: #050505; height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow: hidden; }
-  .topSection { background-color: #0d0d0d; border-bottom: 1px solid #222; }
+  
+  .topSection { background-color: #0d0d0d; border-bottom: 1px solid #222; display: flex; flex-direction: column; }
   .tabRow { display: flex; align-items: flex-end; padding: 8px 10px 0; gap: 5px; background-color: #050505; overflow-x: auto; }
   .tabItem { background-color: #0d0d0d; color: #fff; padding: 10px 12px; border-radius: 8px 8px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12px; border: 1px solid #222; border-bottom: none; cursor: pointer; min-width: 110px; max-width: 180px; }
   .tabItem.active { background-color: #161616; color: #fff; }
@@ -17,21 +18,25 @@
   .tabClose:hover { color: #fff; }
   .addTab { background: transparent; border: none; color: #888; cursor: pointer; padding: 5px; border-radius: 5px; display: flex; margin-bottom: 4px; }
   .addTab:hover { background-color: #1a1a1a; color: #fff; }
+  
   .urlRow { display: flex; align-items: center; padding: 10px; gap: 10px; background-color: #0d0d0d; }
   .ctrlBtn { background: transparent; border: 1px solid #2a2a2a; color: #888; border-radius: 8px; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
   .ctrlBtn:hover { background-color: #1a1a1a; color: #fff; }
   .searchBox { flex: 1; display: flex; align-items: center; background-color: #050505; border: 1px solid #2a2a2a; border-radius: 8px; padding: 0 15px; height: 38px; }
   .searchBox input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 13px; }
+  
   .viewPort { flex: 1; width: 100%; border: none; background-color: #050505; }
 </style>
 </head>
 <body>
+  
   <div class="topSection">
     <div class="tabRow">
       <button class="addTab" id="btn-add-tab" type="button">
         <span class="material-symbols-outlined">add</span>
       </button>
     </div>
+    
     <div class="urlRow">
       <button class="ctrlBtn" id="btn-back" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_left</span></button>
       <button class="ctrlBtn" id="btn-forward" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span></button>
@@ -42,7 +47,7 @@
         <input type="text" id="omnibox" value="waves:newtab">
       </div>
 
-      <button class="ctrlBtn" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">fullscreen</span></button>
+      <button class="ctrlBtn" id="btn-fullscreen" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">fullscreen</span></button>
       <button class="ctrlBtn" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">extension</span></button>
       <button class="ctrlBtn" type="button"><span class="material-symbols-outlined" style="font-size: 20px;">settings</span></button>
     </div>
@@ -66,13 +71,7 @@
     }];
 
     function createTab(title = 'New Tab', address = 'waves:newtab', url = '../newtab.html') {
-      return {
-        id: nextTabId++,
-        title,
-        address,
-        url,
-        active: false
-      };
+      return { id: nextTabId++, title, address, url, active: false };
     }
 
     function getActiveTab() {
@@ -130,10 +129,7 @@
       const targetTab = tabs.find((tab) => tab.id === tabId);
       if (!targetTab) return;
 
-      tabs.forEach((tab) => {
-        tab.active = tab.id === tabId;
-      });
-
+      tabs.forEach((tab) => tab.active = tab.id === tabId);
       renderTabs();
       syncViewportToActiveTab();
     }
@@ -161,20 +157,10 @@
     function resolveUrl(query) {
       const trimmed = query.trim();
       if (!trimmed) return null;
-
-      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-        return trimmed;
-      }
-
-      if (trimmed.startsWith('waves:')) {
-        return '../newtab.html';
-      }
-
-      if (trimmed.includes('.') && !trimmed.includes(' ')) {
-        return 'https://' + trimmed;
-      }
-
-      return 'https://www.google.com/search?q=' + encodeURIComponent(trimmed);
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+      if (trimmed.startsWith('waves:')) return '../newtab.html';
+      if (trimmed.includes('.') && !trimmed.includes(' ')) return 'https://' + trimmed;
+      return 'https://duckduckgo.com/?q=' + encodeURIComponent(trimmed);
     }
 
     function navigateActiveTab(query) {
@@ -186,15 +172,10 @@
 
       const friendlyTitle = query.startsWith('http://') || query.startsWith('https://')
         ? (() => {
-            try {
-              return new URL(resolvedUrl).hostname.replace(/^www\./, '');
-            } catch (error) {
-              return query;
-            }
+            try { return new URL(resolvedUrl).hostname.replace(/^www\./, ''); } 
+            catch { return query; }
           })()
-        : query.startsWith('waves:')
-          ? 'New Tab'
-          : query;
+        : query.startsWith('waves:') ? 'New Tab' : query;
 
       activeTab.title = friendlyTitle;
       activeTab.address = query;
@@ -208,9 +189,7 @@
     addTabButton.addEventListener('click', () => {
       const newTab = createTab();
       newTab.active = true;
-      tabs.forEach((tab) => {
-        tab.active = false;
-      });
+      tabs.forEach((tab) => tab.active = false);
       tabs.push(newTab);
       renderTabs();
       syncViewportToActiveTab();
@@ -233,18 +212,23 @@
     document.getElementById('btn-refresh').addEventListener('click', () => {
       const activeTab = getActiveTab();
       if (!activeTab) return;
+      try { viewport.contentWindow.location.reload(); } 
+      catch (error) { viewport.src = activeTab.url; }
+    });
 
-      try {
-        viewport.contentWindow.location.reload();
-      } catch (error) {
-        viewport.src = activeTab.url;
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      if (viewport.requestFullscreen) {
+        viewport.requestFullscreen();
+      } else if (viewport.webkitRequestFullscreen) {
+        viewport.webkitRequestFullscreen();
+      } else if (viewport.msRequestFullscreen) {
+        viewport.msRequestFullscreen();
       }
     });
 
     viewport.addEventListener('load', () => {
       const activeTab = getActiveTab();
       if (!activeTab) return;
-
       try {
         const titleFromDocument = viewport.contentDocument?.title?.trim();
         if (titleFromDocument) {
