@@ -9,16 +9,26 @@
 </head>
 <body>
 
-<div class="pageModule">
-  <span class="material-symbols-outlined headerIcon">movie</span>
-  <h1>Coming Soon</h1>
-  <p>The videos page is currently under construction. Check back later!</p>
+<div class="topBar">
+  <div class="leftControls">
+    <button class="iconBtn" onclick="window.location.href='../index.html'">
+      <span class="material-symbols-outlined">home</span>
+    </button>
+    <h1 class="pageTitle">VIDEOS</h1>
+  </div>
   
-  <button class="backBtn" onclick="window.location.href='../index.html'">
-    <span class="material-symbols-outlined">arrow_back</span>
-    Return Home
-  </button>
+  <div class="searchWrapper">
+    <span class="material-symbols-outlined searchIcon">search</span>
+    <input type="text" id="searchInput" placeholder="Search YouTube...">
+  </div>
 </div>
 
+<div class="mainContainer">
+  <div class="videosGrid" id="videosGrid">
+    </div>
+</div>
+
+<script src="../env/config.js"></script>
+<script src="../js/videos.js"></script>
 </body>
 </html>
