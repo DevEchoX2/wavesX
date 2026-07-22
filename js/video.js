@@ -1,4 +1,4 @@
-const API_KEY = ENV.YOUTUBE_API_KEY;
+const API_KEY = "AIzaSyD3v5mYtCNhRHjXNRTMvWF51cFuR3kLZ2U";
 const videosGrid = document.getElementById('videosGrid');
 const searchInput = document.getElementById('searchInput');
 
@@ -27,7 +27,6 @@ async function fetchVideos(query = 'Tech trends') {
       const snippet = item.snippet;
       
       const card = document.createElement('a');
-      // UPDATED PATH HERE: Points to the videos folder
       card.href = `../videos/player.html?v=${videoId}`;
       card.className = 'videoCard';
 
