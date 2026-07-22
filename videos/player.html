@@ -3,46 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Player - WAVES</title>
+  <title>Watch - WAVES</title>
   <link rel="stylesheet" href="player.css">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
 </head>
 <body>
 
-  <nav class="topBar">
-    <button class="iconBtn" onclick="window.location.href='../index.html'">
-      <span class="material-symbols-outlined">arrow_back</span>
-      <span>Back</span>
-    </button>
-    <div class="topActions">
-      <button class="iconBtn"><span class="material-symbols-outlined">favorite</span> Save</button>
+  <nav class="player-nav">
+    <div class="nav-left">
+      <button class="icon-btn" onclick="window.location.href='../pages/videos.html'" aria-label="Return">
+        <span class="material-symbols-outlined">arrow_back_ios_new</span>
+      </button>
+      <div class="logo-text">WAVES</div>
+    </div>
+    <div class="nav-right">
+      <button class="icon-btn"><span class="material-symbols-outlined">cast</span></button>
+      <button class="icon-btn"><span class="material-symbols-outlined">more_vert</span></button>
     </div>
   </nav>
 
-  <main class="contentGrid">
-    <section class="mainVideoSection">
-      <div class="playerWrapper">
-        <iframe id="videoIframe" allowfullscreen></iframe>
+  <main class="player-layout">
+    
+    <section class="theatre-section">
+      <div class="video-presentation">
+        <div class="iframe-wrapper">
+          <iframe id="videoIframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
       </div>
       
-      <div class="videoDetails">
-        <h1 id="videoTitle"></h1>
-        <div class="channelInfoRow">
-          <div class="channelName" id="channelName"></div>
-          <div class="stats" id="videoStats"></div>
+      <div class="video-data">
+        <h1 id="videoTitle" class="video-title">Establishing connection...</h1>
+        
+        <div class="interactive-bar">
+          <div class="creator-profile">
+            <div class="creator-avatar" id="creatorAvatar"></div>
+            <div class="creator-details">
+              <div class="creator-name" id="channelName">Awaiting Data</div>
+              <div class="creator-subs">Verified Creator</div>
+            </div>
+            <button class="btn-primary" id="subBtn">Follow</button>
+          </div>
+          
+          <div class="engagement-cluster">
+            <div class="pill-group">
+              <button class="btn-secondary" id="likeBtn">
+                <span class="material-symbols-outlined">favorite</span> 
+                <span id="likeText">Like</span>
+              </button>
+            </div>
+            <button class="btn-secondary">
+              <span class="material-symbols-outlined">ios_share</span> Share
+            </button>
+            <button class="btn-secondary" id="saveBtn">
+              <span class="material-symbols-outlined">bookmark</span> Save
+            </button>
+          </div>
         </div>
         
-        <div class="descriptionBox">
-          <p id="videoDescription"></p>
-          <button id="showMoreBtn" style="display:none;">Show more</button>
+        <div class="details-panel" id="descBox">
+          <div class="stats-header" id="videoStats">Accessing temporal metrics...</div>
+          <p id="videoDescription" class="desc-content collapsed"></p>
+          <button id="showMoreBtn" class="expand-btn">Read more</button>
         </div>
       </div>
     </section>
 
-    <aside class="sidebar">
-      <div class="sectionHeader">Up next</div>
-      <div class="upNextContainer" id="upNextList"></div>
+    <aside class="discovery-sidebar">
+      <h3 class="sidebar-title">Continue Exploring</h3>
+      <div class="suggestions-feed" id="upNextList">
+      </div>
     </aside>
+    
   </main>
 
   <script src="player.js"></script>
