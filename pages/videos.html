@@ -1,34 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Videos - WAVES</title>
-<link rel="stylesheet" href="../css/videos.css">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover - WAVES</title>
+  <link rel="stylesheet" href="../css/videos.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
 </head>
 <body>
-
-<div class="topBar">
-  <div class="leftControls">
-    <button class="iconBtn" onclick="window.location.href='../index.html'">
-      <span class="material-symbols-outlined">home</span>
-    </button>
-    <h1 class="pageTitle">VIDEOS</h1>
-  </div>
   
-  <div class="searchWrapper">
-    <span class="material-symbols-outlined searchIcon">search</span>
-    <input type="text" id="searchInput" placeholder="Search YouTube...">
-  </div>
-</div>
-
-<div class="mainContainer">
-  <div class="videosGrid" id="videosGrid">
+  <header class="solid-header">
+    <div class="logo-container">
+      <div class="logo-icon-wrapper">
+        <span class="material-symbols-outlined logo-icon">waves</span>
+      </div>
+      <h1>WAVES</h1>
     </div>
-</div>
+    
+    <div class="search-container">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="text" id="searchInput" placeholder="Search the waves..." aria-label="Search videos">
+    </div>
 
+    <div class="user-actions">
+      <div class="avatar-ring">
+        <div class="avatar"></div>
+      </div>
+    </div>
+  </header>
 
-<script src="../js/videos.js"></script>
+  <main class="content-wrapper">
+    <section class="feed-section">
+      <div id="videosGrid" class="videos-grid">
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/videos.js"></script>
 </body>
 </html>
