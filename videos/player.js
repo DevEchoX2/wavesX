@@ -1,4 +1,4 @@
-const API_KEY = ENV.YOUTUBE_API_KEY;
+const API_KEY = "AIzaSyD3v5mYtCNhRHjXNRTMvWF51cFuR3kLZ2U";
 
 const videoIframe = document.getElementById('videoIframe');
 const videoTitle = document.getElementById('videoTitle');
