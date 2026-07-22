@@ -1,3 +1,0 @@
-const ENV = {
-  YOUTUBE_API_KEY: "AIzaSyD3v5mYtCNhRHjXNRTMvWF51cFuR3kLZ2U"
-};
