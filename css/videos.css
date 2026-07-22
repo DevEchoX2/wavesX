@@ -1,64 +1,63 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+body { background-color: #050505; color: #fff; min-height: 100vh; display: flex; flex-direction: column; }
 
-body {
-  background-color: #050505;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-}
-
-.pageModule {
-  background-color: #0d0d0d;
-  border: 1px solid #222;
-  border-radius: 20px;
-  padding: 40px;
-  width: 400px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
+.topBar { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 15px 25px; 
+  background-color: #0d0d0d; 
+  border-bottom: 1px solid #222; 
   gap: 20px;
 }
+.leftControls { display: flex; align-items: center; gap: 15px; }
+.pageTitle { font-size: 20px; font-weight: 700; letter-spacing: 1px; }
 
-.headerIcon {
-  font-size: 48px;
-  color: #fff;
+.iconBtn { background: transparent; border: none; color: #888; cursor: pointer; display: flex; align-items: center; transition: color 0.2s; }
+.iconBtn:hover { color: #fff; }
+
+.searchWrapper { 
+  display: flex; 
+  align-items: center; 
+  background-color: #050505; 
+  border: 1px solid #2a2a2a; 
+  border-radius: 8px; 
+  padding: 0 15px; 
+  height: 40px; 
+  flex: 1; 
+  max-width: 600px; 
+}
+.searchWrapper input { background: transparent; border: none; color: #fff; outline: none; font-size: 14px; width: 100%; margin-left: 10px; }
+.searchIcon { color: #888; font-size: 20px; }
+
+.mainContainer { padding: 25px; max-width: 1600px; margin: 0 auto; width: 100%; }
+
+.videosGrid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+  gap: 20px; 
 }
 
-h1 {
-  font-size: 24px;
-  font-weight: 600;
+.videoCard { 
+  display: flex; 
+  flex-direction: column; 
+  text-decoration: none; 
+  color: #fff; 
+  transition: transform 0.2s ease; 
 }
+.videoCard:hover { transform: translateY(-4px); }
 
-p {
-  color: #888;
-  font-size: 14px;
-  line-height: 1.5;
+.thumbWrapper { 
+  width: 100%; 
+  aspect-ratio: 16/9; 
+  background-color: #1a1a1a; 
+  border-radius: 12px; 
+  overflow: hidden; 
+  margin-bottom: 12px; 
+  border: 1px solid #222;
 }
+.thumbWrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-.backBtn {
-  background-color: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  color: #888;
-  padding: 15px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.2s ease;
-  margin-top: 5px;
-}
-
-.backBtn:hover {
-  background-color: #2a2a2a;
-  color: #fff;
-}
+.videoTitle { font-size: 15px; font-weight: 600; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.channelName, .videoMeta { font-size: 13px; color: #888; }
+.errorMsg, .loadingMsg { grid-column: 1 / -1; text-align: center; color: #888; padding: 40px; }
