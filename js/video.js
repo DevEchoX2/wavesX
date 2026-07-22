@@ -27,7 +27,8 @@ async function fetchVideos(query = 'Tech trends') {
       const snippet = item.snippet;
       
       const card = document.createElement('a');
-      card.href = `player.html?v=${videoId}`;
+      // UPDATED PATH HERE: Points to the videos folder
+      card.href = `../videos/player.html?v=${videoId}`;
       card.className = 'videoCard';
 
       const thumb = snippet.thumbnails?.high?.url || snippet.thumbnails?.medium?.url || '';
